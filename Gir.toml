@@ -1,0 +1,18 @@
+[options]
+work_mode = "sys"
+girs_dir = "../../gir-files/"
+library = "Atspi"
+version = "2.0"
+target_path = "."
+min_cfg_version = "2.28"
+single_version_file = "."
+
+external_libraries = [
+   "libdbus",
+   "GLib",
+   "GObject",
+]
+
+ignore = [
+
+]

@@ -1,0 +1,36 @@
+[package]
+name = "atspi-sys"
+version = "0.0.1"
+links = "atspi"
+build = "build.rs"
+[package.metadata.docs.rs]
+features = ["dox"]
+
+[lib]
+name = "atspi_sys"
+
+[dependencies]
+libc = "0.2"
+nix = "0.15"
+
+[dependencies.dbus]
+version = "0.2.1"
+package = "libdbus-sys"
+
+[dependencies.glib_sys]
+git = "https://github.com/gtk-rs/sys"
+package = "glib-sys"
+
+[dependencies.gobject]
+git = "https://github.com/gtk-rs/sys"
+package = "gobject-sys"
+
+[build-dependencies]
+pkg-config = "0.3.7"
+
+[dev-dependencies]
+shell-words = "0.1.0"
+tempdir = "0.3"
+
+[features]
+dox = []
