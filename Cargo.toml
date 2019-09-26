@@ -12,10 +12,7 @@ name = "atspi_sys"
 [dependencies]
 libc = "0.2"
 nix = "0.15"
-
-[dependencies.libdbus-sys]
-version = "0.2"
-package = "libdbus-sys"
+libdbus-sys = "0.2"
 
 [dependencies.glib_sys]
 git = "https://github.com/gtk-rs/sys"

@@ -12,7 +12,7 @@
 extern crate glib_sys as glib;
 extern crate gobject_sys as gobject;
 extern crate libc;
-extern crate libdbus_sys as dbus;
+extern crate libdbus_sys as dbus_sys;
 
 mod accessible;
 mod timeval;
@@ -459,7 +459,7 @@ pub struct AtspiApplication {
     pub parent: gobject::GObject,
     pub hash: *mut glib::GHashTable,
     pub bus_name: *mut c_char,
-    pub bus: *mut dbus::DBusConnection,
+    pub bus: *mut dbus_sys::DBusConnection,
     pub root: *mut _AtspiAccessible,
     pub cache: AtspiCache,
     pub toolkit_name: *mut c_char,
@@ -2148,7 +2148,7 @@ extern "C" {
     // Other functions
     //=========================================================================
     pub fn atspi_dbus_connection_setup_with_g_main(
-        connection: *mut dbus::DBusConnection,
+        connection: *mut dbus_sys::DBusConnection,
         context: *mut glib::GMainContext,
     );
     pub fn atspi_deregister_device_event_listener(
@@ -2176,7 +2176,7 @@ extern "C" {
         name: *const c_char,
         error: *mut *mut glib::GError,
     ) -> gboolean;
-    pub fn atspi_get_a11y_bus() -> *mut dbus::DBusConnection;
+    pub fn atspi_get_a11y_bus() -> *mut dbus_sys::DBusConnection;
     pub fn atspi_get_desktop(i: c_int) -> *mut AtspiAccessible;
     pub fn atspi_get_desktop_count() -> c_int;
     pub fn atspi_get_desktop_list() -> *mut glib::GArray;
