@@ -25,6 +25,8 @@ use libc::{
     intptr_t, size_t, ssize_t, time_t, uintptr_t, FILE,
 };
 
+pub use dbus_sys::DBusConnection;
+
 #[allow(unused_imports)]
 use glib::{gboolean, gconstpointer, gpointer, GType};
 
@@ -459,7 +461,7 @@ pub struct AtspiApplication {
     pub parent: gobject::GObject,
     pub hash: *mut glib::GHashTable,
     pub bus_name: *mut c_char,
-    pub bus: *mut dbus_sys::DBusConnection,
+    pub bus: *mut DBusConnection,
     pub root: *mut _AtspiAccessible,
     pub cache: AtspiCache,
     pub toolkit_name: *mut c_char,
@@ -2148,7 +2150,7 @@ extern "C" {
     // Other functions
     //=========================================================================
     pub fn atspi_dbus_connection_setup_with_g_main(
-        connection: *mut dbus_sys::DBusConnection,
+        connection: *mut DBusConnection,
         context: *mut glib::GMainContext,
     );
     pub fn atspi_deregister_device_event_listener(
@@ -2176,7 +2178,7 @@ extern "C" {
         name: *const c_char,
         error: *mut *mut glib::GError,
     ) -> gboolean;
-    pub fn atspi_get_a11y_bus() -> *mut dbus_sys::DBusConnection;
+    pub fn atspi_get_a11y_bus() -> *mut DBusConnection;
     pub fn atspi_get_desktop(i: c_int) -> *mut AtspiAccessible;
     pub fn atspi_get_desktop_count() -> c_int;
     pub fn atspi_get_desktop_list() -> *mut glib::GArray;
