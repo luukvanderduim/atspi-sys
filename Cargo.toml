@@ -2,6 +2,8 @@
 name = "atspi-sys"
 version = "0.0.1"
 links = "atspi"
+edition = "2018"
+keywords = ["ffi", "accessibility", "a11y"]
 build = "build.rs"
 [package.metadata.docs.rs]
 features = ["dox"]

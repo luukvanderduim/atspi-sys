@@ -5,13 +5,13 @@
 extern crate atspi_sys;
 extern crate shell_words;
 extern crate tempdir;
-use atspi_sys::*;
 use std::env;
 use std::error::Error;
-use std::mem::{align_of, size_of};
 use std::path::Path;
+use std::mem::{align_of, size_of};
 use std::process::Command;
 use std::str;
+use atspi_sys::*;
 
 static PACKAGES: &[&str] = &["atspi-2"];
 
@@ -47,7 +47,8 @@ impl Compiler {
         cmd.arg(out);
         let status = cmd.spawn()?.wait()?;
         if !status.success() {
-            return Err(format!("compilation command {:?} failed, {}", &cmd, status).into());
+            return Err(format!("compilation command {:?} failed, {}",
+                               &cmd, status).into());
         }
         Ok(())
     }
@@ -76,11 +77,13 @@ fn pkg_config_cflags(packages: &[&str]) -> Result<Vec<String>, Box<dyn Error>> {
     cmd.args(packages);
     let out = cmd.output()?;
     if !out.status.success() {
-        return Err(format!("command {:?} returned {}", &cmd, out.status).into());
+        return Err(format!("command {:?} returned {}",
+                           &cmd, out.status).into());
     }
     let stdout = str::from_utf8(&out.stdout)?;
     Ok(shell_words::split(stdout.trim())?)
 }
+
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 struct Layout {
@@ -112,8 +115,9 @@ impl Results {
     fn summary(&self) -> String {
         format!(
             "{} passed; {} failed (compilation errors: {})",
-            self.passed, self.failed, self.failed_to_compile
-        )
+            self.passed,
+            self.failed,
+            self.failed_to_compile)
     }
     fn expect_total_success(&self) {
         if self.failed == 0 {
@@ -129,28 +133,24 @@ fn cross_validate_constants_with_c() {
     let tmpdir = tempdir::TempDir::new("abi").expect("temporary directory");
     let cc = Compiler::new().expect("configured compiler");
 
-    assert_eq!(
-        "1",
-        get_c_value(tmpdir.path(), &cc, "1").expect("C constant"),
-        "failed to obtain correct constant value for 1"
-    );
+    assert_eq!("1",
+               get_c_value(tmpdir.path(), &cc, "1").expect("C constant"),
+               "failed to obtain correct constant value for 1");
 
-    let mut results: Results = Default::default();
+    let mut results : Results = Default::default();
     for (i, &(name, rust_value)) in RUST_CONSTANTS.iter().enumerate() {
         match get_c_value(tmpdir.path(), &cc, name) {
             Err(e) => {
                 results.record_failed_to_compile();
                 eprintln!("{}", e);
-            }
+            },
             Ok(ref c_value) => {
                 if rust_value == c_value {
                     results.record_passed();
                 } else {
                     results.record_failed();
-                    eprintln!(
-                        "Constant value mismatch for {}\nRust: {:?}\nC:    {:?}",
-                        name, rust_value, c_value
-                    );
+                    eprintln!("Constant value mismatch for {}\nRust: {:?}\nC:    {:?}",
+                              name, rust_value, c_value);
                 }
             }
         };
@@ -166,31 +166,24 @@ fn cross_validate_layout_with_c() {
     let tmpdir = tempdir::TempDir::new("abi").expect("temporary directory");
     let cc = Compiler::new().expect("configured compiler");
 
-    assert_eq!(
-        Layout {
-            size: 1,
-            alignment: 1
-        },
-        get_c_layout(tmpdir.path(), &cc, "char").expect("C layout"),
-        "failed to obtain correct layout for char type"
-    );
+    assert_eq!(Layout {size: 1, alignment: 1},
+               get_c_layout(tmpdir.path(), &cc, "char").expect("C layout"),
+               "failed to obtain correct layout for char type");
 
-    let mut results: Results = Default::default();
+    let mut results : Results = Default::default();
     for (i, &(name, rust_layout)) in RUST_LAYOUTS.iter().enumerate() {
         match get_c_layout(tmpdir.path(), &cc, name) {
             Err(e) => {
                 results.record_failed_to_compile();
                 eprintln!("{}", e);
-            }
+            },
             Ok(c_layout) => {
                 if rust_layout == c_layout {
                     results.record_passed();
                 } else {
                     results.record_failed();
-                    eprintln!(
-                        "Layout mismatch for {}\nRust: {:?}\nC:    {:?}",
-                        name, rust_layout, &c_layout
-                    );
+                    eprintln!("Layout mismatch for {}\nRust: {:?}\nC:    {:?}",
+                              name, rust_layout, &c_layout);
                 }
             }
         };
@@ -210,14 +203,15 @@ fn get_c_layout(dir: &Path, cc: &Compiler, name: &str) -> Result<Layout, Box<dyn
     let mut abi_cmd = Command::new(exe);
     let output = abi_cmd.output()?;
     if !output.status.success() {
-        return Err(format!("command {:?} failed, {:?}", &abi_cmd, &output).into());
+        return Err(format!("command {:?} failed, {:?}",
+                           &abi_cmd, &output).into());
     }
 
     let stdout = str::from_utf8(&output.stdout)?;
     let mut words = stdout.trim().split_whitespace();
     let size = words.next().unwrap().parse().unwrap();
     let alignment = words.next().unwrap().parse().unwrap();
-    Ok(Layout { size, alignment })
+    Ok(Layout {size, alignment})
 }
 
 fn get_c_value(dir: &Path, cc: &Compiler, name: &str) -> Result<String, Box<dyn Error>> {
@@ -229,365 +223,70 @@ fn get_c_value(dir: &Path, cc: &Compiler, name: &str) -> Result<String, Box<dyn 
     let mut abi_cmd = Command::new(exe);
     let output = abi_cmd.output()?;
     if !output.status.success() {
-        return Err(format!("command {:?} failed, {:?}", &abi_cmd, &output).into());
+        return Err(format!("command {:?} failed, {:?}",
+                           &abi_cmd, &output).into());
     }
 
     let output = str::from_utf8(&output.stdout)?.trim();
-    if !output.starts_with("###gir test###") || !output.ends_with("###gir test###") {
-        return Err(format!(
-            "command {:?} return invalid output, {:?}",
-            &abi_cmd, &output
-        )
-        .into());
+    if !output.starts_with("###gir test###") ||
+       !output.ends_with("###gir test###") {
+        return Err(format!("command {:?} return invalid output, {:?}",
+                           &abi_cmd, &output).into());
     }
 
     Ok(String::from(&output[14..(output.len() - 14)]))
 }
 
 const RUST_LAYOUTS: &[(&str, Layout)] = &[
-    (
-        "AtspiAccessible",
-        Layout {
-            size: size_of::<AtspiAccessible>(),
-            alignment: align_of::<AtspiAccessible>(),
-        },
-    ),
-    (
-        "AtspiAccessibleClass",
-        Layout {
-            size: size_of::<AtspiAccessibleClass>(),
-            alignment: align_of::<AtspiAccessibleClass>(),
-        },
-    ),
-    (
-        "AtspiApplication",
-        Layout {
-            size: size_of::<AtspiApplication>(),
-            alignment: align_of::<AtspiApplication>(),
-        },
-    ),
-    (
-        "AtspiApplicationClass",
-        Layout {
-            size: size_of::<AtspiApplicationClass>(),
-            alignment: align_of::<AtspiApplicationClass>(),
-        },
-    ),
-    (
-        "AtspiCache",
-        Layout {
-            size: size_of::<AtspiCache>(),
-            alignment: align_of::<AtspiCache>(),
-        },
-    ),
-    (
-        "AtspiCollectionMatchType",
-        Layout {
-            size: size_of::<AtspiCollectionMatchType>(),
-            alignment: align_of::<AtspiCollectionMatchType>(),
-        },
-    ),
-    (
-        "AtspiCollectionSortOrder",
-        Layout {
-            size: size_of::<AtspiCollectionSortOrder>(),
-            alignment: align_of::<AtspiCollectionSortOrder>(),
-        },
-    ),
-    (
-        "AtspiCollectionTreeTraversalType",
-        Layout {
-            size: size_of::<AtspiCollectionTreeTraversalType>(),
-            alignment: align_of::<AtspiCollectionTreeTraversalType>(),
-        },
-    ),
-    (
-        "AtspiComponentLayer",
-        Layout {
-            size: size_of::<AtspiComponentLayer>(),
-            alignment: align_of::<AtspiComponentLayer>(),
-        },
-    ),
-    (
-        "AtspiControllerEventMask",
-        Layout {
-            size: size_of::<AtspiControllerEventMask>(),
-            alignment: align_of::<AtspiControllerEventMask>(),
-        },
-    ),
-    (
-        "AtspiCoordType",
-        Layout {
-            size: size_of::<AtspiCoordType>(),
-            alignment: align_of::<AtspiCoordType>(),
-        },
-    ),
-    (
-        "AtspiDeviceEvent",
-        Layout {
-            size: size_of::<AtspiDeviceEvent>(),
-            alignment: align_of::<AtspiDeviceEvent>(),
-        },
-    ),
-    (
-        "AtspiDeviceEventMask",
-        Layout {
-            size: size_of::<AtspiDeviceEventMask>(),
-            alignment: align_of::<AtspiDeviceEventMask>(),
-        },
-    ),
-    (
-        "AtspiDeviceListener",
-        Layout {
-            size: size_of::<AtspiDeviceListener>(),
-            alignment: align_of::<AtspiDeviceListener>(),
-        },
-    ),
-    (
-        "AtspiDeviceListenerClass",
-        Layout {
-            size: size_of::<AtspiDeviceListenerClass>(),
-            alignment: align_of::<AtspiDeviceListenerClass>(),
-        },
-    ),
-    (
-        "AtspiEvent",
-        Layout {
-            size: size_of::<AtspiEvent>(),
-            alignment: align_of::<AtspiEvent>(),
-        },
-    ),
-    (
-        "AtspiEventListener",
-        Layout {
-            size: size_of::<AtspiEventListener>(),
-            alignment: align_of::<AtspiEventListener>(),
-        },
-    ),
-    (
-        "AtspiEventListenerClass",
-        Layout {
-            size: size_of::<AtspiEventListenerClass>(),
-            alignment: align_of::<AtspiEventListenerClass>(),
-        },
-    ),
-    (
-        "AtspiEventListenerMode",
-        Layout {
-            size: size_of::<AtspiEventListenerMode>(),
-            alignment: align_of::<AtspiEventListenerMode>(),
-        },
-    ),
-    (
-        "AtspiEventType",
-        Layout {
-            size: size_of::<AtspiEventType>(),
-            alignment: align_of::<AtspiEventType>(),
-        },
-    ),
-    (
-        "AtspiHyperlink",
-        Layout {
-            size: size_of::<AtspiHyperlink>(),
-            alignment: align_of::<AtspiHyperlink>(),
-        },
-    ),
-    (
-        "AtspiHyperlinkClass",
-        Layout {
-            size: size_of::<AtspiHyperlinkClass>(),
-            alignment: align_of::<AtspiHyperlinkClass>(),
-        },
-    ),
-    (
-        "AtspiKeyDefinition",
-        Layout {
-            size: size_of::<AtspiKeyDefinition>(),
-            alignment: align_of::<AtspiKeyDefinition>(),
-        },
-    ),
-    (
-        "AtspiKeyEventMask",
-        Layout {
-            size: size_of::<AtspiKeyEventMask>(),
-            alignment: align_of::<AtspiKeyEventMask>(),
-        },
-    ),
-    (
-        "AtspiKeyEventType",
-        Layout {
-            size: size_of::<AtspiKeyEventType>(),
-            alignment: align_of::<AtspiKeyEventType>(),
-        },
-    ),
-    (
-        "AtspiKeyListenerSyncType",
-        Layout {
-            size: size_of::<AtspiKeyListenerSyncType>(),
-            alignment: align_of::<AtspiKeyListenerSyncType>(),
-        },
-    ),
-    (
-        "AtspiKeyMaskType",
-        Layout {
-            size: size_of::<AtspiKeyMaskType>(),
-            alignment: align_of::<AtspiKeyMaskType>(),
-        },
-    ),
-    (
-        "AtspiKeySet",
-        Layout {
-            size: size_of::<AtspiKeySet>(),
-            alignment: align_of::<AtspiKeySet>(),
-        },
-    ),
-    (
-        "AtspiKeySynthType",
-        Layout {
-            size: size_of::<AtspiKeySynthType>(),
-            alignment: align_of::<AtspiKeySynthType>(),
-        },
-    ),
-    (
-        "AtspiLocaleType",
-        Layout {
-            size: size_of::<AtspiLocaleType>(),
-            alignment: align_of::<AtspiLocaleType>(),
-        },
-    ),
-    (
-        "AtspiMatchRule",
-        Layout {
-            size: size_of::<AtspiMatchRule>(),
-            alignment: align_of::<AtspiMatchRule>(),
-        },
-    ),
-    (
-        "AtspiMatchRuleClass",
-        Layout {
-            size: size_of::<AtspiMatchRuleClass>(),
-            alignment: align_of::<AtspiMatchRuleClass>(),
-        },
-    ),
-    (
-        "AtspiModifierType",
-        Layout {
-            size: size_of::<AtspiModifierType>(),
-            alignment: align_of::<AtspiModifierType>(),
-        },
-    ),
-    (
-        "AtspiObject",
-        Layout {
-            size: size_of::<AtspiObject>(),
-            alignment: align_of::<AtspiObject>(),
-        },
-    ),
-    (
-        "AtspiObjectClass",
-        Layout {
-            size: size_of::<AtspiObjectClass>(),
-            alignment: align_of::<AtspiObjectClass>(),
-        },
-    ),
-    (
-        "AtspiPoint",
-        Layout {
-            size: size_of::<AtspiPoint>(),
-            alignment: align_of::<AtspiPoint>(),
-        },
-    ),
-    (
-        "AtspiRange",
-        Layout {
-            size: size_of::<AtspiRange>(),
-            alignment: align_of::<AtspiRange>(),
-        },
-    ),
-    (
-        "AtspiRect",
-        Layout {
-            size: size_of::<AtspiRect>(),
-            alignment: align_of::<AtspiRect>(),
-        },
-    ),
-    (
-        "AtspiRelation",
-        Layout {
-            size: size_of::<AtspiRelation>(),
-            alignment: align_of::<AtspiRelation>(),
-        },
-    ),
-    (
-        "AtspiRelationClass",
-        Layout {
-            size: size_of::<AtspiRelationClass>(),
-            alignment: align_of::<AtspiRelationClass>(),
-        },
-    ),
-    (
-        "AtspiRelationType",
-        Layout {
-            size: size_of::<AtspiRelationType>(),
-            alignment: align_of::<AtspiRelationType>(),
-        },
-    ),
-    (
-        "AtspiRole",
-        Layout {
-            size: size_of::<AtspiRole>(),
-            alignment: align_of::<AtspiRole>(),
-        },
-    ),
-    (
-        "AtspiStateSet",
-        Layout {
-            size: size_of::<AtspiStateSet>(),
-            alignment: align_of::<AtspiStateSet>(),
-        },
-    ),
-    (
-        "AtspiStateSetClass",
-        Layout {
-            size: size_of::<AtspiStateSetClass>(),
-            alignment: align_of::<AtspiStateSetClass>(),
-        },
-    ),
-    (
-        "AtspiStateType",
-        Layout {
-            size: size_of::<AtspiStateType>(),
-            alignment: align_of::<AtspiStateType>(),
-        },
-    ),
-    (
-        "AtspiTextBoundaryType",
-        Layout {
-            size: size_of::<AtspiTextBoundaryType>(),
-            alignment: align_of::<AtspiTextBoundaryType>(),
-        },
-    ),
-    (
-        "AtspiTextClipType",
-        Layout {
-            size: size_of::<AtspiTextClipType>(),
-            alignment: align_of::<AtspiTextClipType>(),
-        },
-    ),
-    (
-        "AtspiTextGranularity",
-        Layout {
-            size: size_of::<AtspiTextGranularity>(),
-            alignment: align_of::<AtspiTextGranularity>(),
-        },
-    ),
-    (
-        "AtspiTextRange",
-        Layout {
-            size: size_of::<AtspiTextRange>(),
-            alignment: align_of::<AtspiTextRange>(),
-        },
-    ),
+    ("AtspiAccessible", Layout {size: size_of::<AtspiAccessible>(), alignment: align_of::<AtspiAccessible>()}),
+    ("AtspiAccessibleClass", Layout {size: size_of::<AtspiAccessibleClass>(), alignment: align_of::<AtspiAccessibleClass>()}),
+    ("AtspiApplication", Layout {size: size_of::<AtspiApplication>(), alignment: align_of::<AtspiApplication>()}),
+    ("AtspiApplicationClass", Layout {size: size_of::<AtspiApplicationClass>(), alignment: align_of::<AtspiApplicationClass>()}),
+    ("AtspiCache", Layout {size: size_of::<AtspiCache>(), alignment: align_of::<AtspiCache>()}),
+    ("AtspiCollectionMatchType", Layout {size: size_of::<AtspiCollectionMatchType>(), alignment: align_of::<AtspiCollectionMatchType>()}),
+    ("AtspiCollectionSortOrder", Layout {size: size_of::<AtspiCollectionSortOrder>(), alignment: align_of::<AtspiCollectionSortOrder>()}),
+    ("AtspiCollectionTreeTraversalType", Layout {size: size_of::<AtspiCollectionTreeTraversalType>(), alignment: align_of::<AtspiCollectionTreeTraversalType>()}),
+    ("AtspiComponentLayer", Layout {size: size_of::<AtspiComponentLayer>(), alignment: align_of::<AtspiComponentLayer>()}),
+    ("AtspiControllerEventMask", Layout {size: size_of::<AtspiControllerEventMask>(), alignment: align_of::<AtspiControllerEventMask>()}),
+    ("AtspiCoordType", Layout {size: size_of::<AtspiCoordType>(), alignment: align_of::<AtspiCoordType>()}),
+    ("AtspiDeviceEvent", Layout {size: size_of::<AtspiDeviceEvent>(), alignment: align_of::<AtspiDeviceEvent>()}),
+    ("AtspiDeviceEventMask", Layout {size: size_of::<AtspiDeviceEventMask>(), alignment: align_of::<AtspiDeviceEventMask>()}),
+    ("AtspiDeviceListener", Layout {size: size_of::<AtspiDeviceListener>(), alignment: align_of::<AtspiDeviceListener>()}),
+    ("AtspiDeviceListenerClass", Layout {size: size_of::<AtspiDeviceListenerClass>(), alignment: align_of::<AtspiDeviceListenerClass>()}),
+    ("AtspiEvent", Layout {size: size_of::<AtspiEvent>(), alignment: align_of::<AtspiEvent>()}),
+    ("AtspiEventListener", Layout {size: size_of::<AtspiEventListener>(), alignment: align_of::<AtspiEventListener>()}),
+    ("AtspiEventListenerClass", Layout {size: size_of::<AtspiEventListenerClass>(), alignment: align_of::<AtspiEventListenerClass>()}),
+    ("AtspiEventListenerMode", Layout {size: size_of::<AtspiEventListenerMode>(), alignment: align_of::<AtspiEventListenerMode>()}),
+    ("AtspiEventType", Layout {size: size_of::<AtspiEventType>(), alignment: align_of::<AtspiEventType>()}),
+    ("AtspiHyperlink", Layout {size: size_of::<AtspiHyperlink>(), alignment: align_of::<AtspiHyperlink>()}),
+    ("AtspiHyperlinkClass", Layout {size: size_of::<AtspiHyperlinkClass>(), alignment: align_of::<AtspiHyperlinkClass>()}),
+    ("AtspiKeyDefinition", Layout {size: size_of::<AtspiKeyDefinition>(), alignment: align_of::<AtspiKeyDefinition>()}),
+    ("AtspiKeyEventMask", Layout {size: size_of::<AtspiKeyEventMask>(), alignment: align_of::<AtspiKeyEventMask>()}),
+    ("AtspiKeyEventType", Layout {size: size_of::<AtspiKeyEventType>(), alignment: align_of::<AtspiKeyEventType>()}),
+    ("AtspiKeyListenerSyncType", Layout {size: size_of::<AtspiKeyListenerSyncType>(), alignment: align_of::<AtspiKeyListenerSyncType>()}),
+    ("AtspiKeyMaskType", Layout {size: size_of::<AtspiKeyMaskType>(), alignment: align_of::<AtspiKeyMaskType>()}),
+    ("AtspiKeySet", Layout {size: size_of::<AtspiKeySet>(), alignment: align_of::<AtspiKeySet>()}),
+    ("AtspiKeySynthType", Layout {size: size_of::<AtspiKeySynthType>(), alignment: align_of::<AtspiKeySynthType>()}),
+    ("AtspiLocaleType", Layout {size: size_of::<AtspiLocaleType>(), alignment: align_of::<AtspiLocaleType>()}),
+    ("AtspiMatchRule", Layout {size: size_of::<AtspiMatchRule>(), alignment: align_of::<AtspiMatchRule>()}),
+    ("AtspiMatchRuleClass", Layout {size: size_of::<AtspiMatchRuleClass>(), alignment: align_of::<AtspiMatchRuleClass>()}),
+    ("AtspiModifierType", Layout {size: size_of::<AtspiModifierType>(), alignment: align_of::<AtspiModifierType>()}),
+    ("AtspiObject", Layout {size: size_of::<AtspiObject>(), alignment: align_of::<AtspiObject>()}),
+    ("AtspiObjectClass", Layout {size: size_of::<AtspiObjectClass>(), alignment: align_of::<AtspiObjectClass>()}),
+    ("AtspiPoint", Layout {size: size_of::<AtspiPoint>(), alignment: align_of::<AtspiPoint>()}),
+    ("AtspiRange", Layout {size: size_of::<AtspiRange>(), alignment: align_of::<AtspiRange>()}),
+    ("AtspiRect", Layout {size: size_of::<AtspiRect>(), alignment: align_of::<AtspiRect>()}),
+    ("AtspiRelation", Layout {size: size_of::<AtspiRelation>(), alignment: align_of::<AtspiRelation>()}),
+    ("AtspiRelationClass", Layout {size: size_of::<AtspiRelationClass>(), alignment: align_of::<AtspiRelationClass>()}),
+    ("AtspiRelationType", Layout {size: size_of::<AtspiRelationType>(), alignment: align_of::<AtspiRelationType>()}),
+    ("AtspiRole", Layout {size: size_of::<AtspiRole>(), alignment: align_of::<AtspiRole>()}),
+    ("AtspiStateSet", Layout {size: size_of::<AtspiStateSet>(), alignment: align_of::<AtspiStateSet>()}),
+    ("AtspiStateSetClass", Layout {size: size_of::<AtspiStateSetClass>(), alignment: align_of::<AtspiStateSetClass>()}),
+    ("AtspiStateType", Layout {size: size_of::<AtspiStateType>(), alignment: align_of::<AtspiStateType>()}),
+    ("AtspiTextBoundaryType", Layout {size: size_of::<AtspiTextBoundaryType>(), alignment: align_of::<AtspiTextBoundaryType>()}),
+    ("AtspiTextClipType", Layout {size: size_of::<AtspiTextClipType>(), alignment: align_of::<AtspiTextClipType>()}),
+    ("AtspiTextGranularity", Layout {size: size_of::<AtspiTextGranularity>(), alignment: align_of::<AtspiTextGranularity>()}),
+    ("AtspiTextRange", Layout {size: size_of::<AtspiTextRange>(), alignment: align_of::<AtspiTextRange>()}),
 ];
 
 const RUST_CONSTANTS: &[(&str, &str)] = &[
@@ -627,46 +326,19 @@ const RUST_CONSTANTS: &[(&str, &str)] = &[
     ("(gint) ATSPI_Collection_TREE_LAST_DEFINED", "3"),
     ("(gint) ATSPI_Collection_TREE_RESTRICT_CHILDREN", "0"),
     ("(gint) ATSPI_Collection_TREE_RESTRICT_SIBLING", "1"),
-    (
-        "ATSPI_DBUS_INTERFACE_ACCESSIBLE",
-        "org.a11y.atspi.Accessible",
-    ),
+    ("ATSPI_DBUS_INTERFACE_ACCESSIBLE", "org.a11y.atspi.Accessible"),
     ("ATSPI_DBUS_INTERFACE_ACTION", "org.a11y.atspi.Action"),
-    (
-        "ATSPI_DBUS_INTERFACE_APPLICATION",
-        "org.a11y.atspi.Application",
-    ),
+    ("ATSPI_DBUS_INTERFACE_APPLICATION", "org.a11y.atspi.Application"),
     ("ATSPI_DBUS_INTERFACE_CACHE", "org.a11y.atspi.Cache"),
-    (
-        "ATSPI_DBUS_INTERFACE_COLLECTION",
-        "org.a11y.atspi.Collection",
-    ),
+    ("ATSPI_DBUS_INTERFACE_COLLECTION", "org.a11y.atspi.Collection"),
     ("ATSPI_DBUS_INTERFACE_COMPONENT", "org.a11y.atspi.Component"),
-    (
-        "ATSPI_DBUS_INTERFACE_DEC",
-        "org.a11y.atspi.DeviceEventController",
-    ),
-    (
-        "ATSPI_DBUS_INTERFACE_DEVICE_EVENT_LISTENER",
-        "org.a11y.atspi.DeviceEventListener",
-    ),
+    ("ATSPI_DBUS_INTERFACE_DEC", "org.a11y.atspi.DeviceEventController"),
+    ("ATSPI_DBUS_INTERFACE_DEVICE_EVENT_LISTENER", "org.a11y.atspi.DeviceEventListener"),
     ("ATSPI_DBUS_INTERFACE_DOCUMENT", "org.a11y.atspi.Document"),
-    (
-        "ATSPI_DBUS_INTERFACE_EDITABLE_TEXT",
-        "org.a11y.atspi.EditableText",
-    ),
-    (
-        "ATSPI_DBUS_INTERFACE_EVENT_KEYBOARD",
-        "org.a11y.atspi.Event.Keyboard",
-    ),
-    (
-        "ATSPI_DBUS_INTERFACE_EVENT_MOUSE",
-        "org.a11y.atspi.Event.Mouse",
-    ),
-    (
-        "ATSPI_DBUS_INTERFACE_EVENT_OBJECT",
-        "org.a11y.atspi.Event.Object",
-    ),
+    ("ATSPI_DBUS_INTERFACE_EDITABLE_TEXT", "org.a11y.atspi.EditableText"),
+    ("ATSPI_DBUS_INTERFACE_EVENT_KEYBOARD", "org.a11y.atspi.Event.Keyboard"),
+    ("ATSPI_DBUS_INTERFACE_EVENT_MOUSE", "org.a11y.atspi.Event.Mouse"),
+    ("ATSPI_DBUS_INTERFACE_EVENT_OBJECT", "org.a11y.atspi.Event.Object"),
     ("ATSPI_DBUS_INTERFACE_HYPERLINK", "org.a11y.atspi.Hyperlink"),
     ("ATSPI_DBUS_INTERFACE_HYPERTEXT", "org.a11y.atspi.Hypertext"),
     ("ATSPI_DBUS_INTERFACE_IMAGE", "org.a11y.atspi.Image"),
@@ -674,17 +346,11 @@ const RUST_CONSTANTS: &[(&str, &str)] = &[
     ("ATSPI_DBUS_INTERFACE_SELECTION", "org.a11y.atspi.Selection"),
     ("ATSPI_DBUS_INTERFACE_SOCKET", "org.a11y.atspi.Socket"),
     ("ATSPI_DBUS_INTERFACE_TABLE", "org.a11y.atspi.Table"),
-    (
-        "ATSPI_DBUS_INTERFACE_TABLE_CELL",
-        "org.a11y.atspi.TableCell",
-    ),
+    ("ATSPI_DBUS_INTERFACE_TABLE_CELL", "org.a11y.atspi.TableCell"),
     ("ATSPI_DBUS_INTERFACE_TEXT", "org.a11y.atspi.Text"),
     ("ATSPI_DBUS_INTERFACE_VALUE", "org.a11y.atspi.Value"),
     ("ATSPI_DBUS_NAME_REGISTRY", "org.a11y.atspi.Registry"),
-    (
-        "ATSPI_DBUS_PATH_DEC",
-        "/org/a11y/atspi/registry/deviceeventcontroller",
-    ),
+    ("ATSPI_DBUS_PATH_DEC", "/org/a11y/atspi/registry/deviceeventcontroller"),
     ("ATSPI_DBUS_PATH_NULL", "/org/a11y/atspi/null"),
     ("ATSPI_DBUS_PATH_REGISTRY", "/org/a11y/atspi/registry"),
     ("ATSPI_DBUS_PATH_ROOT", "/org/a11y/atspi/accessible/root"),
@@ -947,3 +613,5 @@ const RUST_CONSTANTS: &[(&str, &str)] = &[
     ("(gint) ATSPI_TEXT_GRANULARITY_SENTENCE", "2"),
     ("(gint) ATSPI_TEXT_GRANULARITY_WORD", "1"),
 ];
+
+

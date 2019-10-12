@@ -3,29 +3,23 @@
 // DO NOT EDIT
 
 #![allow(non_camel_case_types, non_upper_case_globals, non_snake_case)]
-#![allow(
-    clippy::approx_constant,
-    clippy::type_complexity,
-    clippy::unreadable_literal
-)]
+#![allow(clippy::approx_constant, clippy::type_complexity, clippy::unreadable_literal)]
 
+extern crate libc;
+extern crate libdbus_sys as libdbus;
 extern crate glib_sys as glib;
 extern crate gobject_sys as gobject;
-extern crate libc;
-extern crate libdbus_sys as dbus_sys;
 
 mod accessible;
 mod timeval;
 
-use accessible::_AtspiAccessible;
+pub use accessible::*;
+pub use timeval::*;
 
 #[allow(unused_imports)]
-use libc::{
-    c_char, c_double, c_float, c_int, c_long, c_short, c_uchar, c_uint, c_ulong, c_ushort, c_void,
-    intptr_t, size_t, ssize_t, time_t, uintptr_t, FILE,
-};
-
-pub use dbus_sys::DBusConnection;
+use libc::{c_int, c_char, c_uchar, c_float, c_uint, c_double,
+    c_short, c_ushort, c_long, c_ulong,
+    c_void, size_t, ssize_t, intptr_t, uintptr_t, time_t, FILE};
 
 #[allow(unused_imports)]
 use glib::{gboolean, gconstpointer, gpointer, GType};
@@ -338,62 +332,34 @@ pub const ATSPI_TEXT_GRANULARITY_PARAGRAPH: AtspiTextGranularity = 4;
 // Constants
 pub const ATSPI_COMPONENTLAYER_COUNT: c_int = 9;
 pub const ATSPI_COORD_TYPE_COUNT: c_int = 2;
-pub const ATSPI_DBUS_INTERFACE_ACCESSIBLE: *const c_char =
-    b"org.a11y.atspi.Accessible\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_ACTION: *const c_char =
-    b"org.a11y.atspi.Action\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_APPLICATION: *const c_char =
-    b"org.a11y.atspi.Application\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_CACHE: *const c_char =
-    b"org.a11y.atspi.Cache\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_COLLECTION: *const c_char =
-    b"org.a11y.atspi.Collection\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_COMPONENT: *const c_char =
-    b"org.a11y.atspi.Component\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_DEC: *const c_char =
-    b"org.a11y.atspi.DeviceEventController\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_DEVICE_EVENT_LISTENER: *const c_char =
-    b"org.a11y.atspi.DeviceEventListener\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_DOCUMENT: *const c_char =
-    b"org.a11y.atspi.Document\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_EDITABLE_TEXT: *const c_char =
-    b"org.a11y.atspi.EditableText\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_EVENT_KEYBOARD: *const c_char =
-    b"org.a11y.atspi.Event.Keyboard\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_EVENT_MOUSE: *const c_char =
-    b"org.a11y.atspi.Event.Mouse\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_EVENT_OBJECT: *const c_char =
-    b"org.a11y.atspi.Event.Object\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_HYPERLINK: *const c_char =
-    b"org.a11y.atspi.Hyperlink\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_HYPERTEXT: *const c_char =
-    b"org.a11y.atspi.Hypertext\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_IMAGE: *const c_char =
-    b"org.a11y.atspi.Image\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_REGISTRY: *const c_char =
-    b"org.a11y.atspi.Registry\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_SELECTION: *const c_char =
-    b"org.a11y.atspi.Selection\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_SOCKET: *const c_char =
-    b"org.a11y.atspi.Socket\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_TABLE: *const c_char =
-    b"org.a11y.atspi.Table\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_TABLE_CELL: *const c_char =
-    b"org.a11y.atspi.TableCell\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_TEXT: *const c_char =
-    b"org.a11y.atspi.Text\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_INTERFACE_VALUE: *const c_char =
-    b"org.a11y.atspi.Value\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_NAME_REGISTRY: *const c_char =
-    b"org.a11y.atspi.Registry\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_PATH_DEC: *const c_char =
-    b"/org/a11y/atspi/registry/deviceeventcontroller\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_PATH_NULL: *const c_char =
-    b"/org/a11y/atspi/null\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_PATH_REGISTRY: *const c_char =
-    b"/org/a11y/atspi/registry\0" as *const u8 as *const c_char;
-pub const ATSPI_DBUS_PATH_ROOT: *const c_char =
-    b"/org/a11y/atspi/accessible/root\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_ACCESSIBLE: *const c_char = b"org.a11y.atspi.Accessible\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_ACTION: *const c_char = b"org.a11y.atspi.Action\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_APPLICATION: *const c_char = b"org.a11y.atspi.Application\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_CACHE: *const c_char = b"org.a11y.atspi.Cache\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_COLLECTION: *const c_char = b"org.a11y.atspi.Collection\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_COMPONENT: *const c_char = b"org.a11y.atspi.Component\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_DEC: *const c_char = b"org.a11y.atspi.DeviceEventController\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_DEVICE_EVENT_LISTENER: *const c_char = b"org.a11y.atspi.DeviceEventListener\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_DOCUMENT: *const c_char = b"org.a11y.atspi.Document\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_EDITABLE_TEXT: *const c_char = b"org.a11y.atspi.EditableText\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_EVENT_KEYBOARD: *const c_char = b"org.a11y.atspi.Event.Keyboard\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_EVENT_MOUSE: *const c_char = b"org.a11y.atspi.Event.Mouse\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_EVENT_OBJECT: *const c_char = b"org.a11y.atspi.Event.Object\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_HYPERLINK: *const c_char = b"org.a11y.atspi.Hyperlink\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_HYPERTEXT: *const c_char = b"org.a11y.atspi.Hypertext\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_IMAGE: *const c_char = b"org.a11y.atspi.Image\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_REGISTRY: *const c_char = b"org.a11y.atspi.Registry\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_SELECTION: *const c_char = b"org.a11y.atspi.Selection\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_SOCKET: *const c_char = b"org.a11y.atspi.Socket\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_TABLE: *const c_char = b"org.a11y.atspi.Table\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_TABLE_CELL: *const c_char = b"org.a11y.atspi.TableCell\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_TEXT: *const c_char = b"org.a11y.atspi.Text\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_VALUE: *const c_char = b"org.a11y.atspi.Value\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_NAME_REGISTRY: *const c_char = b"org.a11y.atspi.Registry\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_PATH_DEC: *const c_char = b"/org/a11y/atspi/registry/deviceeventcontroller\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_PATH_NULL: *const c_char = b"/org/a11y/atspi/null\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_PATH_REGISTRY: *const c_char = b"/org/a11y/atspi/registry\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_PATH_ROOT: *const c_char = b"/org/a11y/atspi/accessible/root\0" as *const u8 as *const c_char;
 pub const ATSPI_EVENTTYPE_COUNT: c_int = 4;
 pub const ATSPI_KEYEVENTTYPE_COUNT: c_int = 2;
 pub const ATSPI_KEYSYNTHTYPE_COUNT: c_int = 5;
@@ -428,10 +394,8 @@ pub const ATSPI_KEYLISTENER_CANCONSUME: AtspiKeyListenerSyncType = 2;
 pub const ATSPI_KEYLISTENER_ALL_WINDOWS: AtspiKeyListenerSyncType = 4;
 
 // Callbacks
-pub type AtspiDeviceListenerCB =
-    Option<unsafe extern "C" fn(*const AtspiDeviceEvent, *mut c_void) -> gboolean>;
-pub type AtspiDeviceListenerSimpleCB =
-    Option<unsafe extern "C" fn(*const AtspiDeviceEvent) -> gboolean>;
+pub type AtspiDeviceListenerCB = Option<unsafe extern "C" fn(*const AtspiDeviceEvent, *mut c_void) -> gboolean>;
+pub type AtspiDeviceListenerSimpleCB = Option<unsafe extern "C" fn(*const AtspiDeviceEvent) -> gboolean>;
 pub type AtspiEventListenerCB = Option<unsafe extern "C" fn(*mut AtspiEvent, *mut c_void)>;
 pub type AtspiEventListenerSimpleCB = Option<unsafe extern "C" fn(*const AtspiEvent)>;
 
@@ -445,8 +409,8 @@ pub struct AtspiAccessibleClass {
 impl ::std::fmt::Debug for AtspiAccessibleClass {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiAccessibleClass @ {:?}", self as *const _))
-            .field("parent_class", &self.parent_class)
-            .finish()
+         .field("parent_class", &self.parent_class)
+         .finish()
     }
 }
 
@@ -461,7 +425,7 @@ pub struct AtspiApplication {
     pub parent: gobject::GObject,
     pub hash: *mut glib::GHashTable,
     pub bus_name: *mut c_char,
-    pub bus: *mut DBusConnection,
+    pub bus: *mut libdbus::DBusConnection,
     pub root: *mut _AtspiAccessible,
     pub cache: AtspiCache,
     pub toolkit_name: *mut c_char,
@@ -473,17 +437,17 @@ pub struct AtspiApplication {
 impl ::std::fmt::Debug for AtspiApplication {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiApplication @ {:?}", self as *const _))
-            .field("parent", &self.parent)
-            .field("hash", &self.hash)
-            .field("bus_name", &self.bus_name)
-            .field("bus", &self.bus)
-            .field("root", &self.root)
-            .field("cache", &self.cache)
-            .field("toolkit_name", &self.toolkit_name)
-            .field("toolkit_version", &self.toolkit_version)
-            .field("atspi_version", &self.atspi_version)
-            .field("time_added", &self.time_added)
-            .finish()
+         .field("parent", &self.parent)
+         .field("hash", &self.hash)
+         .field("bus_name", &self.bus_name)
+         .field("bus", &self.bus)
+         .field("root", &self.root)
+         .field("cache", &self.cache)
+         .field("toolkit_name", &self.toolkit_name)
+         .field("toolkit_version", &self.toolkit_version)
+         .field("atspi_version", &self.atspi_version)
+         .field("time_added", &self.time_added)
+         .finish()
     }
 }
 
@@ -496,8 +460,8 @@ pub struct AtspiApplicationClass {
 impl ::std::fmt::Debug for AtspiApplicationClass {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiApplicationClass @ {:?}", self as *const _))
-            .field("parent_class", &self.parent_class)
-            .finish()
+         .field("parent_class", &self.parent_class)
+         .finish()
     }
 }
 
@@ -516,14 +480,14 @@ pub struct AtspiDeviceEvent {
 impl ::std::fmt::Debug for AtspiDeviceEvent {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiDeviceEvent @ {:?}", self as *const _))
-            .field("type_", &self.type_)
-            .field("id", &self.id)
-            .field("hw_code", &self.hw_code)
-            .field("modifiers", &self.modifiers)
-            .field("timestamp", &self.timestamp)
-            .field("event_string", &self.event_string)
-            .field("is_text", &self.is_text)
-            .finish()
+         .field("type_", &self.type_)
+         .field("id", &self.id)
+         .field("hw_code", &self.hw_code)
+         .field("modifiers", &self.modifiers)
+         .field("timestamp", &self.timestamp)
+         .field("event_string", &self.event_string)
+         .field("is_text", &self.is_text)
+         .finish()
     }
 }
 
@@ -531,19 +495,15 @@ impl ::std::fmt::Debug for AtspiDeviceEvent {
 #[derive(Copy, Clone)]
 pub struct AtspiDeviceListenerClass {
     pub parent_class: gobject::GObjectClass,
-    pub device_event:
-        Option<unsafe extern "C" fn(*mut AtspiDeviceListener, *const AtspiDeviceEvent) -> gboolean>,
+    pub device_event: Option<unsafe extern "C" fn(*mut AtspiDeviceListener, *const AtspiDeviceEvent) -> gboolean>,
 }
 
 impl ::std::fmt::Debug for AtspiDeviceListenerClass {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        f.debug_struct(&format!(
-            "AtspiDeviceListenerClass @ {:?}",
-            self as *const _
-        ))
-        .field("parent_class", &self.parent_class)
-        .field("device_event", &self.device_event)
-        .finish()
+        f.debug_struct(&format!("AtspiDeviceListenerClass @ {:?}", self as *const _))
+         .field("parent_class", &self.parent_class)
+         .field("device_event", &self.device_event)
+         .finish()
     }
 }
 
@@ -560,12 +520,12 @@ pub struct AtspiEvent {
 impl ::std::fmt::Debug for AtspiEvent {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiEvent @ {:?}", self as *const _))
-            .field("type_", &self.type_)
-            .field("source", &self.source)
-            .field("detail1", &self.detail1)
-            .field("detail2", &self.detail2)
-            .field("any_data", &self.any_data)
-            .finish()
+         .field("type_", &self.type_)
+         .field("source", &self.source)
+         .field("detail1", &self.detail1)
+         .field("detail2", &self.detail2)
+         .field("any_data", &self.any_data)
+         .finish()
     }
 }
 
@@ -578,8 +538,8 @@ pub struct AtspiEventListenerClass {
 impl ::std::fmt::Debug for AtspiEventListenerClass {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiEventListenerClass @ {:?}", self as *const _))
-            .field("parent_class", &self.parent_class)
-            .finish()
+         .field("parent_class", &self.parent_class)
+         .finish()
     }
 }
 
@@ -594,10 +554,10 @@ pub struct AtspiEventListenerMode {
 impl ::std::fmt::Debug for AtspiEventListenerMode {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiEventListenerMode @ {:?}", self as *const _))
-            .field("synchronous", &self.synchronous)
-            .field("preemptive", &self.preemptive)
-            .field("global", &self.global)
-            .finish()
+         .field("synchronous", &self.synchronous)
+         .field("preemptive", &self.preemptive)
+         .field("global", &self.global)
+         .finish()
     }
 }
 
@@ -610,8 +570,8 @@ pub struct AtspiHyperlinkClass {
 impl ::std::fmt::Debug for AtspiHyperlinkClass {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiHyperlinkClass @ {:?}", self as *const _))
-            .field("parent_class", &self.parent_class)
-            .finish()
+         .field("parent_class", &self.parent_class)
+         .finish()
     }
 }
 
@@ -627,11 +587,11 @@ pub struct AtspiKeyDefinition {
 impl ::std::fmt::Debug for AtspiKeyDefinition {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiKeyDefinition @ {:?}", self as *const _))
-            .field("keycode", &self.keycode)
-            .field("keysym", &self.keysym)
-            .field("keystring", &self.keystring)
-            .field("unused", &self.unused)
-            .finish()
+         .field("keycode", &self.keycode)
+         .field("keysym", &self.keysym)
+         .field("keystring", &self.keystring)
+         .field("unused", &self.unused)
+         .finish()
     }
 }
 
@@ -647,11 +607,11 @@ pub struct AtspiKeySet {
 impl ::std::fmt::Debug for AtspiKeySet {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiKeySet @ {:?}", self as *const _))
-            .field("keysyms", &self.keysyms)
-            .field("keycodes", &self.keycodes)
-            .field("keystrings", &self.keystrings)
-            .field("len", &self.len)
-            .finish()
+         .field("keysyms", &self.keysyms)
+         .field("keycodes", &self.keycodes)
+         .field("keystrings", &self.keystrings)
+         .field("len", &self.len)
+         .finish()
     }
 }
 
@@ -664,8 +624,8 @@ pub struct AtspiMatchRuleClass {
 impl ::std::fmt::Debug for AtspiMatchRuleClass {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiMatchRuleClass @ {:?}", self as *const _))
-            .field("parent_class", &self.parent_class)
-            .finish()
+         .field("parent_class", &self.parent_class)
+         .finish()
     }
 }
 
@@ -678,8 +638,8 @@ pub struct AtspiObjectClass {
 impl ::std::fmt::Debug for AtspiObjectClass {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiObjectClass @ {:?}", self as *const _))
-            .field("parent_class", &self.parent_class)
-            .finish()
+         .field("parent_class", &self.parent_class)
+         .finish()
     }
 }
 
@@ -693,9 +653,9 @@ pub struct AtspiPoint {
 impl ::std::fmt::Debug for AtspiPoint {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiPoint @ {:?}", self as *const _))
-            .field("x", &self.x)
-            .field("y", &self.y)
-            .finish()
+         .field("x", &self.x)
+         .field("y", &self.y)
+         .finish()
     }
 }
 
@@ -709,9 +669,9 @@ pub struct AtspiRange {
 impl ::std::fmt::Debug for AtspiRange {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiRange @ {:?}", self as *const _))
-            .field("start_offset", &self.start_offset)
-            .field("end_offset", &self.end_offset)
-            .finish()
+         .field("start_offset", &self.start_offset)
+         .field("end_offset", &self.end_offset)
+         .finish()
     }
 }
 
@@ -727,11 +687,11 @@ pub struct AtspiRect {
 impl ::std::fmt::Debug for AtspiRect {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiRect @ {:?}", self as *const _))
-            .field("x", &self.x)
-            .field("y", &self.y)
-            .field("width", &self.width)
-            .field("height", &self.height)
-            .finish()
+         .field("x", &self.x)
+         .field("y", &self.y)
+         .field("width", &self.width)
+         .field("height", &self.height)
+         .finish()
     }
 }
 
@@ -744,8 +704,8 @@ pub struct AtspiRelationClass {
 impl ::std::fmt::Debug for AtspiRelationClass {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiRelationClass @ {:?}", self as *const _))
-            .field("parent_class", &self.parent_class)
-            .finish()
+         .field("parent_class", &self.parent_class)
+         .finish()
     }
 }
 
@@ -758,8 +718,8 @@ pub struct AtspiStateSetClass {
 impl ::std::fmt::Debug for AtspiStateSetClass {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiStateSetClass @ {:?}", self as *const _))
-            .field("parent_class", &self.parent_class)
-            .finish()
+         .field("parent_class", &self.parent_class)
+         .finish()
     }
 }
 
@@ -774,10 +734,10 @@ pub struct AtspiTextRange {
 impl ::std::fmt::Debug for AtspiTextRange {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiTextRange @ {:?}", self as *const _))
-            .field("start_offset", &self.start_offset)
-            .field("end_offset", &self.end_offset)
-            .field("content", &self.content)
-            .finish()
+         .field("start_offset", &self.start_offset)
+         .field("end_offset", &self.end_offset)
+         .field("content", &self.content)
+         .finish()
     }
 }
 
@@ -801,18 +761,18 @@ pub struct AtspiAccessible {
 impl ::std::fmt::Debug for AtspiAccessible {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiAccessible @ {:?}", self as *const _))
-            .field("parent", &self.parent)
-            .field("accessible_parent", &self.accessible_parent)
-            .field("children", &self.children)
-            .field("role", &self.role)
-            .field("interfaces", &self.interfaces)
-            .field("name", &self.name)
-            .field("description", &self.description)
-            .field("states", &self.states)
-            .field("attributes", &self.attributes)
-            .field("cached_properties", &self.cached_properties)
-            .field("priv_", &self.priv_)
-            .finish()
+         .field("parent", &self.parent)
+         .field("accessible_parent", &self.accessible_parent)
+         .field("children", &self.children)
+         .field("role", &self.role)
+         .field("interfaces", &self.interfaces)
+         .field("name", &self.name)
+         .field("description", &self.description)
+         .field("states", &self.states)
+         .field("attributes", &self.attributes)
+         .field("cached_properties", &self.cached_properties)
+         .field("priv_", &self.priv_)
+         .finish()
     }
 }
 
@@ -827,10 +787,10 @@ pub struct AtspiDeviceListener {
 impl ::std::fmt::Debug for AtspiDeviceListener {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiDeviceListener @ {:?}", self as *const _))
-            .field("parent", &self.parent)
-            .field("id", &self.id)
-            .field("callbacks", &self.callbacks)
-            .finish()
+         .field("parent", &self.parent)
+         .field("id", &self.id)
+         .field("callbacks", &self.callbacks)
+         .finish()
     }
 }
 
@@ -846,11 +806,11 @@ pub struct AtspiEventListener {
 impl ::std::fmt::Debug for AtspiEventListener {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiEventListener @ {:?}", self as *const _))
-            .field("parent", &self.parent)
-            .field("callback", &self.callback)
-            .field("user_data", &self.user_data)
-            .field("cb_destroyed", &self.cb_destroyed)
-            .finish()
+         .field("parent", &self.parent)
+         .field("callback", &self.callback)
+         .field("user_data", &self.user_data)
+         .field("cb_destroyed", &self.cb_destroyed)
+         .finish()
     }
 }
 
@@ -863,8 +823,8 @@ pub struct AtspiHyperlink {
 impl ::std::fmt::Debug for AtspiHyperlink {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiHyperlink @ {:?}", self as *const _))
-            .field("parent", &self.parent)
-            .finish()
+         .field("parent", &self.parent)
+         .finish()
     }
 }
 
@@ -886,17 +846,17 @@ pub struct AtspiMatchRule {
 impl ::std::fmt::Debug for AtspiMatchRule {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiMatchRule @ {:?}", self as *const _))
-            .field("parent", &self.parent)
-            .field("states", &self.states)
-            .field("statematchtype", &self.statematchtype)
-            .field("attributes", &self.attributes)
-            .field("attributematchtype", &self.attributematchtype)
-            .field("interfaces", &self.interfaces)
-            .field("interfacematchtype", &self.interfacematchtype)
-            .field("roles", &self.roles)
-            .field("rolematchtype", &self.rolematchtype)
-            .field("invert", &self.invert)
-            .finish()
+         .field("parent", &self.parent)
+         .field("states", &self.states)
+         .field("statematchtype", &self.statematchtype)
+         .field("attributes", &self.attributes)
+         .field("attributematchtype", &self.attributematchtype)
+         .field("interfaces", &self.interfaces)
+         .field("interfacematchtype", &self.interfacematchtype)
+         .field("roles", &self.roles)
+         .field("rolematchtype", &self.rolematchtype)
+         .field("invert", &self.invert)
+         .finish()
     }
 }
 
@@ -911,10 +871,10 @@ pub struct AtspiObject {
 impl ::std::fmt::Debug for AtspiObject {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiObject @ {:?}", self as *const _))
-            .field("parent", &self.parent)
-            .field("app", &self.app)
-            .field("path", &self.path)
-            .finish()
+         .field("parent", &self.parent)
+         .field("app", &self.app)
+         .field("path", &self.path)
+         .finish()
     }
 }
 
@@ -929,10 +889,10 @@ pub struct AtspiRelation {
 impl ::std::fmt::Debug for AtspiRelation {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiRelation @ {:?}", self as *const _))
-            .field("parent", &self.parent)
-            .field("relation_type", &self.relation_type)
-            .field("targets", &self.targets)
-            .finish()
+         .field("parent", &self.parent)
+         .field("relation_type", &self.relation_type)
+         .field("targets", &self.targets)
+         .finish()
     }
 }
 
@@ -947,10 +907,10 @@ pub struct AtspiStateSet {
 impl ::std::fmt::Debug for AtspiStateSet {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiStateSet @ {:?}", self as *const _))
-            .field("parent", &self.parent)
-            .field("accessible", &self.accessible)
-            .field("states", &self.states)
-            .finish()
+         .field("parent", &self.parent)
+         .field("accessible", &self.accessible)
+         .field("states", &self.states)
+         .finish()
     }
 }
 
@@ -1062,6 +1022,7 @@ impl ::std::fmt::Debug for AtspiValue {
         write!(f, "AtspiValue @ {:?}", self as *const _)
     }
 }
+
 
 extern "C" {
 
@@ -1203,92 +1164,37 @@ extern "C" {
     pub fn atspi_accessible_clear_cache(obj: *mut AtspiAccessible);
     pub fn atspi_accessible_get_action(obj: *mut AtspiAccessible) -> *mut AtspiAction;
     pub fn atspi_accessible_get_action_iface(obj: *mut AtspiAccessible) -> *mut AtspiAction;
-    pub fn atspi_accessible_get_application(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiAccessible;
-    pub fn atspi_accessible_get_atspi_version(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_accessible_get_attributes(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GHashTable;
-    pub fn atspi_accessible_get_attributes_as_array(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GArray;
-    pub fn atspi_accessible_get_child_at_index(
-        obj: *mut AtspiAccessible,
-        child_index: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiAccessible;
-    pub fn atspi_accessible_get_child_count(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
+    pub fn atspi_accessible_get_application(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
+    pub fn atspi_accessible_get_atspi_version(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_accessible_get_attributes(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut glib::GHashTable;
+    pub fn atspi_accessible_get_attributes_as_array(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut glib::GArray;
+    pub fn atspi_accessible_get_child_at_index(obj: *mut AtspiAccessible, child_index: c_int, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
+    pub fn atspi_accessible_get_child_count(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> c_int;
     pub fn atspi_accessible_get_collection(obj: *mut AtspiAccessible) -> *mut AtspiCollection;
-    pub fn atspi_accessible_get_collection_iface(obj: *mut AtspiAccessible)
-        -> *mut AtspiCollection;
+    pub fn atspi_accessible_get_collection_iface(obj: *mut AtspiAccessible) -> *mut AtspiCollection;
     pub fn atspi_accessible_get_component(obj: *mut AtspiAccessible) -> *mut AtspiComponent;
     pub fn atspi_accessible_get_component_iface(obj: *mut AtspiAccessible) -> *mut AtspiComponent;
-    pub fn atspi_accessible_get_description(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
+    pub fn atspi_accessible_get_description(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut c_char;
     pub fn atspi_accessible_get_document(obj: *mut AtspiAccessible) -> *mut AtspiDocument;
     pub fn atspi_accessible_get_document_iface(obj: *mut AtspiAccessible) -> *mut AtspiDocument;
     pub fn atspi_accessible_get_editable_text(obj: *mut AtspiAccessible) -> *mut AtspiEditableText;
-    pub fn atspi_accessible_get_editable_text_iface(
-        obj: *mut AtspiAccessible,
-    ) -> *mut AtspiEditableText;
+    pub fn atspi_accessible_get_editable_text_iface(obj: *mut AtspiAccessible) -> *mut AtspiEditableText;
     pub fn atspi_accessible_get_hyperlink(obj: *mut AtspiAccessible) -> *mut AtspiHyperlink;
     pub fn atspi_accessible_get_hypertext(obj: *mut AtspiAccessible) -> *mut AtspiHypertext;
     pub fn atspi_accessible_get_hypertext_iface(obj: *mut AtspiAccessible) -> *mut AtspiHypertext;
-    pub fn atspi_accessible_get_id(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
+    pub fn atspi_accessible_get_id(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> c_int;
     pub fn atspi_accessible_get_image(obj: *mut AtspiAccessible) -> *mut AtspiImage;
     pub fn atspi_accessible_get_image_iface(obj: *mut AtspiAccessible) -> *mut AtspiImage;
-    pub fn atspi_accessible_get_index_in_parent(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
+    pub fn atspi_accessible_get_index_in_parent(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> c_int;
     pub fn atspi_accessible_get_interfaces(obj: *mut AtspiAccessible) -> *mut glib::GArray;
-    pub fn atspi_accessible_get_localized_role_name(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_accessible_get_name(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_accessible_get_object_locale(
-        accessible: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> *const c_char;
-    pub fn atspi_accessible_get_parent(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiAccessible;
-    pub fn atspi_accessible_get_process_id(
-        accessible: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> c_uint;
-    pub fn atspi_accessible_get_relation_set(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GArray;
-    pub fn atspi_accessible_get_role(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> AtspiRole;
-    pub fn atspi_accessible_get_role_name(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
+    pub fn atspi_accessible_get_localized_role_name(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_accessible_get_name(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_accessible_get_object_locale(accessible: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *const c_char;
+    pub fn atspi_accessible_get_parent(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
+    pub fn atspi_accessible_get_process_id(accessible: *mut AtspiAccessible, error: *mut *mut glib::GError) -> c_uint;
+    pub fn atspi_accessible_get_relation_set(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut glib::GArray;
+    pub fn atspi_accessible_get_role(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> AtspiRole;
+    pub fn atspi_accessible_get_role_name(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut c_char;
     pub fn atspi_accessible_get_selection(obj: *mut AtspiAccessible) -> *mut AtspiSelection;
     pub fn atspi_accessible_get_selection_iface(obj: *mut AtspiAccessible) -> *mut AtspiSelection;
     pub fn atspi_accessible_get_state_set(obj: *mut AtspiAccessible) -> *mut AtspiStateSet;
@@ -1297,14 +1203,8 @@ extern "C" {
     pub fn atspi_accessible_get_table_iface(obj: *mut AtspiAccessible) -> *mut AtspiTable;
     pub fn atspi_accessible_get_text(obj: *mut AtspiAccessible) -> *mut AtspiText;
     pub fn atspi_accessible_get_text_iface(obj: *mut AtspiAccessible) -> *mut AtspiText;
-    pub fn atspi_accessible_get_toolkit_name(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_accessible_get_toolkit_version(
-        obj: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
+    pub fn atspi_accessible_get_toolkit_name(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_accessible_get_toolkit_version(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut c_char;
     pub fn atspi_accessible_get_value(obj: *mut AtspiAccessible) -> *mut AtspiValue;
     pub fn atspi_accessible_get_value_iface(obj: *mut AtspiAccessible) -> *mut AtspiValue;
     pub fn atspi_accessible_set_cache_mask(accessible: *mut AtspiAccessible, mask: AtspiCache);
@@ -1313,138 +1213,43 @@ extern "C" {
     // AtspiDeviceListener
     //=========================================================================
     pub fn atspi_device_listener_get_type() -> GType;
-    pub fn atspi_device_listener_new(
-        callback: AtspiDeviceListenerCB,
-        user_data: *mut c_void,
-        callback_destroyed: glib::GDestroyNotify,
-    ) -> *mut AtspiDeviceListener;
-    pub fn atspi_device_listener_new_simple(
-        callback: AtspiDeviceListenerSimpleCB,
-        callback_destroyed: glib::GDestroyNotify,
-    ) -> *mut AtspiDeviceListener;
-    pub fn atspi_device_listener_add_callback(
-        listener: *mut AtspiDeviceListener,
-        callback: AtspiDeviceListenerCB,
-        callback_destroyed: glib::GDestroyNotify,
-        user_data: *mut c_void,
-    );
-    pub fn atspi_device_listener_remove_callback(
-        listener: *mut AtspiDeviceListener,
-        callback: AtspiDeviceListenerCB,
-    );
+    pub fn atspi_device_listener_new(callback: AtspiDeviceListenerCB, user_data: *mut c_void, callback_destroyed: glib::GDestroyNotify) -> *mut AtspiDeviceListener;
+    pub fn atspi_device_listener_new_simple(callback: AtspiDeviceListenerSimpleCB, callback_destroyed: glib::GDestroyNotify) -> *mut AtspiDeviceListener;
+    pub fn atspi_device_listener_add_callback(listener: *mut AtspiDeviceListener, callback: AtspiDeviceListenerCB, callback_destroyed: glib::GDestroyNotify, user_data: *mut c_void);
+    pub fn atspi_device_listener_remove_callback(listener: *mut AtspiDeviceListener, callback: AtspiDeviceListenerCB);
 
     //=========================================================================
     // AtspiEventListener
     //=========================================================================
     pub fn atspi_event_listener_get_type() -> GType;
-    pub fn atspi_event_listener_new(
-        callback: AtspiEventListenerCB,
-        user_data: gpointer,
-        callback_destroyed: glib::GDestroyNotify,
-    ) -> *mut AtspiEventListener;
-    pub fn atspi_event_listener_new_simple(
-        callback: AtspiEventListenerSimpleCB,
-        callback_destroyed: glib::GDestroyNotify,
-    ) -> *mut AtspiEventListener;
-    pub fn atspi_event_listener_deregister_from_callback(
-        callback: AtspiEventListenerCB,
-        user_data: *mut c_void,
-        event_type: *const c_char,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_event_listener_deregister_no_data(
-        callback: AtspiEventListenerSimpleCB,
-        event_type: *const c_char,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_event_listener_register_from_callback(
-        callback: AtspiEventListenerCB,
-        user_data: *mut c_void,
-        callback_destroyed: glib::GDestroyNotify,
-        event_type: *const c_char,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_event_listener_register_from_callback_full(
-        callback: AtspiEventListenerCB,
-        user_data: *mut c_void,
-        callback_destroyed: glib::GDestroyNotify,
-        event_type: *const c_char,
-        properties: *mut glib::GArray,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_event_listener_register_no_data(
-        callback: AtspiEventListenerSimpleCB,
-        callback_destroyed: glib::GDestroyNotify,
-        event_type: *const c_char,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_event_listener_deregister(
-        listener: *mut AtspiEventListener,
-        event_type: *const c_char,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_event_listener_register(
-        listener: *mut AtspiEventListener,
-        event_type: *const c_char,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_event_listener_register_full(
-        listener: *mut AtspiEventListener,
-        event_type: *const c_char,
-        properties: *mut glib::GArray,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
+    pub fn atspi_event_listener_new(callback: AtspiEventListenerCB, user_data: gpointer, callback_destroyed: glib::GDestroyNotify) -> *mut AtspiEventListener;
+    pub fn atspi_event_listener_new_simple(callback: AtspiEventListenerSimpleCB, callback_destroyed: glib::GDestroyNotify) -> *mut AtspiEventListener;
+    pub fn atspi_event_listener_deregister_from_callback(callback: AtspiEventListenerCB, user_data: *mut c_void, event_type: *const c_char, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_event_listener_deregister_no_data(callback: AtspiEventListenerSimpleCB, event_type: *const c_char, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_event_listener_register_from_callback(callback: AtspiEventListenerCB, user_data: *mut c_void, callback_destroyed: glib::GDestroyNotify, event_type: *const c_char, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_event_listener_register_from_callback_full(callback: AtspiEventListenerCB, user_data: *mut c_void, callback_destroyed: glib::GDestroyNotify, event_type: *const c_char, properties: *mut glib::GArray, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_event_listener_register_no_data(callback: AtspiEventListenerSimpleCB, callback_destroyed: glib::GDestroyNotify, event_type: *const c_char, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_event_listener_deregister(listener: *mut AtspiEventListener, event_type: *const c_char, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_event_listener_register(listener: *mut AtspiEventListener, event_type: *const c_char, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_event_listener_register_full(listener: *mut AtspiEventListener, event_type: *const c_char, properties: *mut glib::GArray, error: *mut *mut glib::GError) -> gboolean;
 
     //=========================================================================
     // AtspiHyperlink
     //=========================================================================
     pub fn atspi_hyperlink_get_type() -> GType;
-    pub fn atspi_hyperlink_get_end_index(
-        obj: *mut AtspiHyperlink,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_hyperlink_get_index_range(
-        obj: *mut AtspiHyperlink,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiRange;
-    pub fn atspi_hyperlink_get_n_anchors(
-        obj: *mut AtspiHyperlink,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_hyperlink_get_object(
-        obj: *mut AtspiHyperlink,
-        i: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiAccessible;
-    pub fn atspi_hyperlink_get_start_index(
-        obj: *mut AtspiHyperlink,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_hyperlink_get_uri(
-        obj: *mut AtspiHyperlink,
-        i: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_hyperlink_is_valid(
-        obj: *mut AtspiHyperlink,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
+    pub fn atspi_hyperlink_get_end_index(obj: *mut AtspiHyperlink, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_hyperlink_get_index_range(obj: *mut AtspiHyperlink, error: *mut *mut glib::GError) -> *mut AtspiRange;
+    pub fn atspi_hyperlink_get_n_anchors(obj: *mut AtspiHyperlink, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_hyperlink_get_object(obj: *mut AtspiHyperlink, i: c_int, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
+    pub fn atspi_hyperlink_get_start_index(obj: *mut AtspiHyperlink, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_hyperlink_get_uri(obj: *mut AtspiHyperlink, i: c_int, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_hyperlink_is_valid(obj: *mut AtspiHyperlink, error: *mut *mut glib::GError) -> gboolean;
 
     //=========================================================================
     // AtspiMatchRule
     //=========================================================================
     pub fn atspi_match_rule_get_type() -> GType;
-    pub fn atspi_match_rule_new(
-        states: *mut AtspiStateSet,
-        statematchtype: AtspiCollectionMatchType,
-        attributes: *mut glib::GHashTable,
-        attributematchtype: AtspiCollectionMatchType,
-        roles: *mut glib::GArray,
-        rolematchtype: AtspiCollectionMatchType,
-        interfaces: *mut glib::GArray,
-        interfacematchtype: AtspiCollectionMatchType,
-        invert: gboolean,
-    ) -> *mut AtspiMatchRule;
+    pub fn atspi_match_rule_new(states: *mut AtspiStateSet, statematchtype: AtspiCollectionMatchType, attributes: *mut glib::GHashTable, attributematchtype: AtspiCollectionMatchType, roles: *mut glib::GArray, rolematchtype: AtspiCollectionMatchType, interfaces: *mut glib::GArray, interfacematchtype: AtspiCollectionMatchType, invert: gboolean) -> *mut AtspiMatchRule;
 
     //=========================================================================
     // AtspiObject
@@ -1465,739 +1270,208 @@ extern "C" {
     pub fn atspi_state_set_get_type() -> GType;
     pub fn atspi_state_set_new(states: *mut glib::GArray) -> *mut AtspiStateSet;
     pub fn atspi_state_set_add(set: *mut AtspiStateSet, state: AtspiStateType);
-    pub fn atspi_state_set_compare(
-        set: *mut AtspiStateSet,
-        set2: *mut AtspiStateSet,
-    ) -> *mut AtspiStateSet;
+    pub fn atspi_state_set_compare(set: *mut AtspiStateSet, set2: *mut AtspiStateSet) -> *mut AtspiStateSet;
     pub fn atspi_state_set_contains(set: *mut AtspiStateSet, state: AtspiStateType) -> gboolean;
     pub fn atspi_state_set_equals(set: *mut AtspiStateSet, set2: *mut AtspiStateSet) -> gboolean;
     pub fn atspi_state_set_get_states(set: *mut AtspiStateSet) -> *mut glib::GArray;
     pub fn atspi_state_set_is_empty(set: *mut AtspiStateSet) -> gboolean;
     pub fn atspi_state_set_remove(set: *mut AtspiStateSet, state: AtspiStateType);
-    pub fn atspi_state_set_set_by_name(
-        set: *mut AtspiStateSet,
-        name: *const c_char,
-        enabled: gboolean,
-    );
+    pub fn atspi_state_set_set_by_name(set: *mut AtspiStateSet, name: *const c_char, enabled: gboolean);
 
     //=========================================================================
     // AtspiAction
     //=========================================================================
     pub fn atspi_action_get_type() -> GType;
-    pub fn atspi_action_do_action(
-        obj: *mut AtspiAction,
-        i: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_action_get_action_description(
-        obj: *mut AtspiAction,
-        i: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_action_get_action_name(
-        obj: *mut AtspiAction,
-        i: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_action_get_description(
-        obj: *mut AtspiAction,
-        i: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_action_get_key_binding(
-        obj: *mut AtspiAction,
-        i: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_action_get_localized_name(
-        obj: *mut AtspiAction,
-        i: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_action_get_n_actions(
-        obj: *mut AtspiAction,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_action_get_name(
-        obj: *mut AtspiAction,
-        i: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
+    pub fn atspi_action_do_action(obj: *mut AtspiAction, i: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_action_get_action_description(obj: *mut AtspiAction, i: c_int, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_action_get_action_name(obj: *mut AtspiAction, i: c_int, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_action_get_description(obj: *mut AtspiAction, i: c_int, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_action_get_key_binding(obj: *mut AtspiAction, i: c_int, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_action_get_localized_name(obj: *mut AtspiAction, i: c_int, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_action_get_n_actions(obj: *mut AtspiAction, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_action_get_name(obj: *mut AtspiAction, i: c_int, error: *mut *mut glib::GError) -> *mut c_char;
 
     //=========================================================================
     // AtspiCollection
     //=========================================================================
     pub fn atspi_collection_get_type() -> GType;
-    pub fn atspi_collection_get_active_descendant(
-        collection: *mut AtspiCollection,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiAccessible;
-    pub fn atspi_collection_get_matches(
-        collection: *mut AtspiCollection,
-        rule: *mut AtspiMatchRule,
-        sortby: AtspiCollectionSortOrder,
-        count: c_int,
-        traverse: gboolean,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GArray;
-    pub fn atspi_collection_get_matches_from(
-        collection: *mut AtspiCollection,
-        current_object: *mut AtspiAccessible,
-        rule: *mut AtspiMatchRule,
-        sortby: AtspiCollectionSortOrder,
-        tree: AtspiCollectionTreeTraversalType,
-        count: c_int,
-        traverse: gboolean,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GArray;
-    pub fn atspi_collection_get_matches_to(
-        collection: *mut AtspiCollection,
-        current_object: *mut AtspiAccessible,
-        rule: *mut AtspiMatchRule,
-        sortby: AtspiCollectionSortOrder,
-        tree: AtspiCollectionTreeTraversalType,
-        limit_scope: gboolean,
-        count: c_int,
-        traverse: gboolean,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GArray;
-    pub fn atspi_collection_is_ancestor_of(
-        collection: *mut AtspiCollection,
-        test: *mut AtspiAccessible,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
+    pub fn atspi_collection_get_active_descendant(collection: *mut AtspiCollection, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
+    pub fn atspi_collection_get_matches(collection: *mut AtspiCollection, rule: *mut AtspiMatchRule, sortby: AtspiCollectionSortOrder, count: c_int, traverse: gboolean, error: *mut *mut glib::GError) -> *mut glib::GArray;
+    pub fn atspi_collection_get_matches_from(collection: *mut AtspiCollection, current_object: *mut AtspiAccessible, rule: *mut AtspiMatchRule, sortby: AtspiCollectionSortOrder, tree: AtspiCollectionTreeTraversalType, count: c_int, traverse: gboolean, error: *mut *mut glib::GError) -> *mut glib::GArray;
+    pub fn atspi_collection_get_matches_to(collection: *mut AtspiCollection, current_object: *mut AtspiAccessible, rule: *mut AtspiMatchRule, sortby: AtspiCollectionSortOrder, tree: AtspiCollectionTreeTraversalType, limit_scope: gboolean, count: c_int, traverse: gboolean, error: *mut *mut glib::GError) -> *mut glib::GArray;
+    pub fn atspi_collection_is_ancestor_of(collection: *mut AtspiCollection, test: *mut AtspiAccessible, error: *mut *mut glib::GError) -> gboolean;
 
     //=========================================================================
     // AtspiComponent
     //=========================================================================
     pub fn atspi_component_get_type() -> GType;
-    pub fn atspi_component_contains(
-        obj: *mut AtspiComponent,
-        x: c_int,
-        y: c_int,
-        ctype: AtspiCoordType,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_component_get_accessible_at_point(
-        obj: *mut AtspiComponent,
-        x: c_int,
-        y: c_int,
-        ctype: AtspiCoordType,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiAccessible;
-    pub fn atspi_component_get_alpha(
-        obj: *mut AtspiComponent,
-        error: *mut *mut glib::GError,
-    ) -> c_double;
-    pub fn atspi_component_get_extents(
-        obj: *mut AtspiComponent,
-        ctype: AtspiCoordType,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiRect;
-    pub fn atspi_component_get_layer(
-        obj: *mut AtspiComponent,
-        error: *mut *mut glib::GError,
-    ) -> AtspiComponentLayer;
-    pub fn atspi_component_get_mdi_z_order(
-        obj: *mut AtspiComponent,
-        error: *mut *mut glib::GError,
-    ) -> c_short;
-    pub fn atspi_component_get_position(
-        obj: *mut AtspiComponent,
-        ctype: AtspiCoordType,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiPoint;
-    pub fn atspi_component_get_size(
-        obj: *mut AtspiComponent,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiPoint;
-    pub fn atspi_component_grab_focus(
-        obj: *mut AtspiComponent,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_component_set_extents(
-        obj: *mut AtspiComponent,
-        x: c_int,
-        y: c_int,
-        width: c_int,
-        height: c_int,
-        ctype: AtspiCoordType,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_component_set_position(
-        obj: *mut AtspiComponent,
-        x: c_int,
-        y: c_int,
-        ctype: AtspiCoordType,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_component_set_size(
-        obj: *mut AtspiComponent,
-        width: c_int,
-        height: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
+    pub fn atspi_component_contains(obj: *mut AtspiComponent, x: c_int, y: c_int, ctype: AtspiCoordType, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_component_get_accessible_at_point(obj: *mut AtspiComponent, x: c_int, y: c_int, ctype: AtspiCoordType, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
+    pub fn atspi_component_get_alpha(obj: *mut AtspiComponent, error: *mut *mut glib::GError) -> c_double;
+    pub fn atspi_component_get_extents(obj: *mut AtspiComponent, ctype: AtspiCoordType, error: *mut *mut glib::GError) -> *mut AtspiRect;
+    pub fn atspi_component_get_layer(obj: *mut AtspiComponent, error: *mut *mut glib::GError) -> AtspiComponentLayer;
+    pub fn atspi_component_get_mdi_z_order(obj: *mut AtspiComponent, error: *mut *mut glib::GError) -> c_short;
+    pub fn atspi_component_get_position(obj: *mut AtspiComponent, ctype: AtspiCoordType, error: *mut *mut glib::GError) -> *mut AtspiPoint;
+    pub fn atspi_component_get_size(obj: *mut AtspiComponent, error: *mut *mut glib::GError) -> *mut AtspiPoint;
+    pub fn atspi_component_grab_focus(obj: *mut AtspiComponent, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_component_set_extents(obj: *mut AtspiComponent, x: c_int, y: c_int, width: c_int, height: c_int, ctype: AtspiCoordType, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_component_set_position(obj: *mut AtspiComponent, x: c_int, y: c_int, ctype: AtspiCoordType, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_component_set_size(obj: *mut AtspiComponent, width: c_int, height: c_int, error: *mut *mut glib::GError) -> gboolean;
 
     //=========================================================================
     // AtspiDocument
     //=========================================================================
     pub fn atspi_document_get_type() -> GType;
-    pub fn atspi_document_get_attribute_value(
-        obj: *mut AtspiDocument,
-        attribute: *mut c_char,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_document_get_attributes(
-        obj: *mut AtspiDocument,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GHashTable;
-    pub fn atspi_document_get_current_page_number(
-        obj: *mut AtspiDocument,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_document_get_document_attribute_value(
-        obj: *mut AtspiDocument,
-        attribute: *mut c_char,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_document_get_document_attributes(
-        obj: *mut AtspiDocument,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GHashTable;
-    pub fn atspi_document_get_locale(
-        obj: *mut AtspiDocument,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_document_get_page_count(
-        obj: *mut AtspiDocument,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
+    pub fn atspi_document_get_attribute_value(obj: *mut AtspiDocument, attribute: *mut c_char, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_document_get_attributes(obj: *mut AtspiDocument, error: *mut *mut glib::GError) -> *mut glib::GHashTable;
+    pub fn atspi_document_get_current_page_number(obj: *mut AtspiDocument, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_document_get_document_attribute_value(obj: *mut AtspiDocument, attribute: *mut c_char, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_document_get_document_attributes(obj: *mut AtspiDocument, error: *mut *mut glib::GError) -> *mut glib::GHashTable;
+    pub fn atspi_document_get_locale(obj: *mut AtspiDocument, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_document_get_page_count(obj: *mut AtspiDocument, error: *mut *mut glib::GError) -> c_int;
 
     //=========================================================================
     // AtspiEditableText
     //=========================================================================
     pub fn atspi_editable_text_get_type() -> GType;
-    pub fn atspi_editable_text_copy_text(
-        obj: *mut AtspiEditableText,
-        start_pos: c_int,
-        end_pos: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_editable_text_cut_text(
-        obj: *mut AtspiEditableText,
-        start_pos: c_int,
-        end_pos: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_editable_text_delete_text(
-        obj: *mut AtspiEditableText,
-        start_pos: c_int,
-        end_pos: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_editable_text_insert_text(
-        obj: *mut AtspiEditableText,
-        position: c_int,
-        text: *const c_char,
-        length: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_editable_text_paste_text(
-        obj: *mut AtspiEditableText,
-        position: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_editable_text_set_text_contents(
-        obj: *mut AtspiEditableText,
-        new_contents: *const c_char,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
+    pub fn atspi_editable_text_copy_text(obj: *mut AtspiEditableText, start_pos: c_int, end_pos: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_editable_text_cut_text(obj: *mut AtspiEditableText, start_pos: c_int, end_pos: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_editable_text_delete_text(obj: *mut AtspiEditableText, start_pos: c_int, end_pos: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_editable_text_insert_text(obj: *mut AtspiEditableText, position: c_int, text: *const c_char, length: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_editable_text_paste_text(obj: *mut AtspiEditableText, position: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_editable_text_set_text_contents(obj: *mut AtspiEditableText, new_contents: *const c_char, error: *mut *mut glib::GError) -> gboolean;
 
     //=========================================================================
     // AtspiHypertext
     //=========================================================================
     pub fn atspi_hypertext_get_type() -> GType;
-    pub fn atspi_hypertext_get_link(
-        obj: *mut AtspiHypertext,
-        link_index: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiHyperlink;
-    pub fn atspi_hypertext_get_link_index(
-        obj: *mut AtspiHypertext,
-        character_offset: c_int,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_hypertext_get_n_links(
-        obj: *mut AtspiHypertext,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
+    pub fn atspi_hypertext_get_link(obj: *mut AtspiHypertext, link_index: c_int, error: *mut *mut glib::GError) -> *mut AtspiHyperlink;
+    pub fn atspi_hypertext_get_link_index(obj: *mut AtspiHypertext, character_offset: c_int, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_hypertext_get_n_links(obj: *mut AtspiHypertext, error: *mut *mut glib::GError) -> c_int;
 
     //=========================================================================
     // AtspiImage
     //=========================================================================
     pub fn atspi_image_get_type() -> GType;
-    pub fn atspi_image_get_image_description(
-        obj: *mut AtspiImage,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_image_get_image_extents(
-        obj: *mut AtspiImage,
-        ctype: AtspiCoordType,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiRect;
-    pub fn atspi_image_get_image_locale(
-        obj: *mut AtspiImage,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_image_get_image_position(
-        obj: *mut AtspiImage,
-        ctype: AtspiCoordType,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiPoint;
-    pub fn atspi_image_get_image_size(
-        obj: *mut AtspiImage,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiPoint;
+    pub fn atspi_image_get_image_description(obj: *mut AtspiImage, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_image_get_image_extents(obj: *mut AtspiImage, ctype: AtspiCoordType, error: *mut *mut glib::GError) -> *mut AtspiRect;
+    pub fn atspi_image_get_image_locale(obj: *mut AtspiImage, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_image_get_image_position(obj: *mut AtspiImage, ctype: AtspiCoordType, error: *mut *mut glib::GError) -> *mut AtspiPoint;
+    pub fn atspi_image_get_image_size(obj: *mut AtspiImage, error: *mut *mut glib::GError) -> *mut AtspiPoint;
 
     //=========================================================================
     // AtspiSelection
     //=========================================================================
     pub fn atspi_selection_get_type() -> GType;
-    pub fn atspi_selection_clear_selection(
-        obj: *mut AtspiSelection,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_selection_deselect_child(
-        obj: *mut AtspiSelection,
-        child_index: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_selection_deselect_selected_child(
-        obj: *mut AtspiSelection,
-        selected_child_index: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_selection_get_n_selected_children(
-        obj: *mut AtspiSelection,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_selection_get_selected_child(
-        obj: *mut AtspiSelection,
-        selected_child_index: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiAccessible;
-    pub fn atspi_selection_is_child_selected(
-        obj: *mut AtspiSelection,
-        child_index: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_selection_select_all(
-        obj: *mut AtspiSelection,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_selection_select_child(
-        obj: *mut AtspiSelection,
-        child_index: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
+    pub fn atspi_selection_clear_selection(obj: *mut AtspiSelection, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_selection_deselect_child(obj: *mut AtspiSelection, child_index: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_selection_deselect_selected_child(obj: *mut AtspiSelection, selected_child_index: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_selection_get_n_selected_children(obj: *mut AtspiSelection, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_selection_get_selected_child(obj: *mut AtspiSelection, selected_child_index: c_int, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
+    pub fn atspi_selection_is_child_selected(obj: *mut AtspiSelection, child_index: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_selection_select_all(obj: *mut AtspiSelection, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_selection_select_child(obj: *mut AtspiSelection, child_index: c_int, error: *mut *mut glib::GError) -> gboolean;
 
     //=========================================================================
     // AtspiTable
     //=========================================================================
     pub fn atspi_table_get_type() -> GType;
-    pub fn atspi_table_add_column_selection(
-        obj: *mut AtspiTable,
-        column: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_table_add_row_selection(
-        obj: *mut AtspiTable,
-        row: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_table_get_accessible_at(
-        obj: *mut AtspiTable,
-        row: c_int,
-        column: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiAccessible;
-    pub fn atspi_table_get_caption(
-        obj: *mut AtspiTable,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiAccessible;
-    pub fn atspi_table_get_column_at_index(
-        obj: *mut AtspiTable,
-        index: c_int,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_table_get_column_description(
-        obj: *mut AtspiTable,
-        column: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_table_get_column_extent_at(
-        obj: *mut AtspiTable,
-        row: c_int,
-        column: c_int,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_table_get_column_header(
-        obj: *mut AtspiTable,
-        column: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiAccessible;
-    pub fn atspi_table_get_index_at(
-        obj: *mut AtspiTable,
-        row: c_int,
-        column: c_int,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
+    pub fn atspi_table_add_column_selection(obj: *mut AtspiTable, column: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_table_add_row_selection(obj: *mut AtspiTable, row: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_table_get_accessible_at(obj: *mut AtspiTable, row: c_int, column: c_int, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
+    pub fn atspi_table_get_caption(obj: *mut AtspiTable, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
+    pub fn atspi_table_get_column_at_index(obj: *mut AtspiTable, index: c_int, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_table_get_column_description(obj: *mut AtspiTable, column: c_int, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_table_get_column_extent_at(obj: *mut AtspiTable, row: c_int, column: c_int, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_table_get_column_header(obj: *mut AtspiTable, column: c_int, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
+    pub fn atspi_table_get_index_at(obj: *mut AtspiTable, row: c_int, column: c_int, error: *mut *mut glib::GError) -> c_int;
     pub fn atspi_table_get_n_columns(obj: *mut AtspiTable, error: *mut *mut glib::GError) -> c_int;
     pub fn atspi_table_get_n_rows(obj: *mut AtspiTable, error: *mut *mut glib::GError) -> c_int;
-    pub fn atspi_table_get_n_selected_columns(
-        obj: *mut AtspiTable,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_table_get_n_selected_rows(
-        obj: *mut AtspiTable,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_table_get_row_at_index(
-        obj: *mut AtspiTable,
-        index: c_int,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_table_get_row_column_extents_at_index(
-        obj: *mut AtspiTable,
-        index: c_int,
-        row: *mut c_int,
-        col: *mut c_int,
-        row_extents: *mut c_int,
-        col_extents: *mut c_int,
-        is_selected: *mut gboolean,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_table_get_row_description(
-        obj: *mut AtspiTable,
-        row: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_table_get_row_extent_at(
-        obj: *mut AtspiTable,
-        row: c_int,
-        column: c_int,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_table_get_row_header(
-        obj: *mut AtspiTable,
-        row: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiAccessible;
-    pub fn atspi_table_get_selected_columns(
-        obj: *mut AtspiTable,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GArray;
-    pub fn atspi_table_get_selected_rows(
-        obj: *mut AtspiTable,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GArray;
-    pub fn atspi_table_get_summary(
-        obj: *mut AtspiTable,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiAccessible;
-    pub fn atspi_table_is_column_selected(
-        obj: *mut AtspiTable,
-        column: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_table_is_row_selected(
-        obj: *mut AtspiTable,
-        row: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_table_is_selected(
-        obj: *mut AtspiTable,
-        row: c_int,
-        column: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_table_remove_column_selection(
-        obj: *mut AtspiTable,
-        column: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_table_remove_row_selection(
-        obj: *mut AtspiTable,
-        row: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
+    pub fn atspi_table_get_n_selected_columns(obj: *mut AtspiTable, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_table_get_n_selected_rows(obj: *mut AtspiTable, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_table_get_row_at_index(obj: *mut AtspiTable, index: c_int, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_table_get_row_column_extents_at_index(obj: *mut AtspiTable, index: c_int, row: *mut c_int, col: *mut c_int, row_extents: *mut c_int, col_extents: *mut c_int, is_selected: *mut gboolean, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_table_get_row_description(obj: *mut AtspiTable, row: c_int, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_table_get_row_extent_at(obj: *mut AtspiTable, row: c_int, column: c_int, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_table_get_row_header(obj: *mut AtspiTable, row: c_int, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
+    pub fn atspi_table_get_selected_columns(obj: *mut AtspiTable, error: *mut *mut glib::GError) -> *mut glib::GArray;
+    pub fn atspi_table_get_selected_rows(obj: *mut AtspiTable, error: *mut *mut glib::GError) -> *mut glib::GArray;
+    pub fn atspi_table_get_summary(obj: *mut AtspiTable, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
+    pub fn atspi_table_is_column_selected(obj: *mut AtspiTable, column: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_table_is_row_selected(obj: *mut AtspiTable, row: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_table_is_selected(obj: *mut AtspiTable, row: c_int, column: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_table_remove_column_selection(obj: *mut AtspiTable, column: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_table_remove_row_selection(obj: *mut AtspiTable, row: c_int, error: *mut *mut glib::GError) -> gboolean;
 
     //=========================================================================
     // AtspiTableCell
     //=========================================================================
     pub fn atspi_table_cell_get_type() -> GType;
-    pub fn atspi_table_cell_get_column_header_cells(
-        obj: *mut AtspiTableCell,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GPtrArray;
-    pub fn atspi_table_cell_get_column_index(
-        obj: *mut AtspiTableCell,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_table_cell_get_column_span(
-        obj: *mut AtspiTableCell,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_table_cell_get_position(
-        obj: *mut AtspiTableCell,
-        row: *mut c_int,
-        column: *mut c_int,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_table_cell_get_row_column_span(
-        obj: *mut AtspiTableCell,
-        row: *mut c_int,
-        column: *mut c_int,
-        row_span: *mut c_int,
-        column_span: *mut c_int,
-        error: *mut *mut glib::GError,
-    );
-    pub fn atspi_table_cell_get_row_header_cells(
-        obj: *mut AtspiTableCell,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GPtrArray;
-    pub fn atspi_table_cell_get_row_span(
-        obj: *mut AtspiTableCell,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_table_cell_get_table(
-        obj: *mut AtspiTableCell,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiAccessible;
+    pub fn atspi_table_cell_get_column_header_cells(obj: *mut AtspiTableCell, error: *mut *mut glib::GError) -> *mut glib::GPtrArray;
+    pub fn atspi_table_cell_get_column_index(obj: *mut AtspiTableCell, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_table_cell_get_column_span(obj: *mut AtspiTableCell, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_table_cell_get_position(obj: *mut AtspiTableCell, row: *mut c_int, column: *mut c_int, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_table_cell_get_row_column_span(obj: *mut AtspiTableCell, row: *mut c_int, column: *mut c_int, row_span: *mut c_int, column_span: *mut c_int, error: *mut *mut glib::GError);
+    pub fn atspi_table_cell_get_row_header_cells(obj: *mut AtspiTableCell, error: *mut *mut glib::GError) -> *mut glib::GPtrArray;
+    pub fn atspi_table_cell_get_row_span(obj: *mut AtspiTableCell, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_table_cell_get_table(obj: *mut AtspiTableCell, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
 
     //=========================================================================
     // AtspiText
     //=========================================================================
     pub fn atspi_text_get_type() -> GType;
-    pub fn atspi_text_add_selection(
-        obj: *mut AtspiText,
-        start_offset: c_int,
-        end_offset: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_text_get_attribute_run(
-        obj: *mut AtspiText,
-        offset: c_int,
-        include_defaults: gboolean,
-        start_offset: *mut c_int,
-        end_offset: *mut c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GHashTable;
-    pub fn atspi_text_get_attribute_value(
-        obj: *mut AtspiText,
-        offset: c_int,
-        attribute_name: *mut c_char,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_text_get_attributes(
-        obj: *mut AtspiText,
-        offset: c_int,
-        start_offset: *mut c_int,
-        end_offset: *mut c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GHashTable;
-    pub fn atspi_text_get_bounded_ranges(
-        obj: *mut AtspiText,
-        x: c_int,
-        y: c_int,
-        width: c_int,
-        height: c_int,
-        type_: AtspiCoordType,
-        clipTypeX: AtspiTextClipType,
-        clipTypeY: AtspiTextClipType,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GArray;
-    pub fn atspi_text_get_caret_offset(obj: *mut AtspiText, error: *mut *mut glib::GError)
-        -> c_int;
-    pub fn atspi_text_get_character_at_offset(
-        obj: *mut AtspiText,
-        offset: c_int,
-        error: *mut *mut glib::GError,
-    ) -> c_uint;
-    pub fn atspi_text_get_character_count(
-        obj: *mut AtspiText,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_text_get_character_extents(
-        obj: *mut AtspiText,
-        offset: c_int,
-        type_: AtspiCoordType,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiRect;
-    pub fn atspi_text_get_default_attributes(
-        obj: *mut AtspiText,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GHashTable;
-    pub fn atspi_text_get_n_selections(obj: *mut AtspiText, error: *mut *mut glib::GError)
-        -> c_int;
-    pub fn atspi_text_get_offset_at_point(
-        obj: *mut AtspiText,
-        x: c_int,
-        y: c_int,
-        type_: AtspiCoordType,
-        error: *mut *mut glib::GError,
-    ) -> c_int;
-    pub fn atspi_text_get_range_extents(
-        obj: *mut AtspiText,
-        start_offset: c_int,
-        end_offset: c_int,
-        type_: AtspiCoordType,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiRect;
-    pub fn atspi_text_get_selection(
-        obj: *mut AtspiText,
-        selection_num: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiRange;
-    pub fn atspi_text_get_string_at_offset(
-        obj: *mut AtspiText,
-        offset: c_int,
-        granularity: AtspiTextGranularity,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiTextRange;
-    pub fn atspi_text_get_text(
-        obj: *mut AtspiText,
-        start_offset: c_int,
-        end_offset: c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_text_get_text_after_offset(
-        obj: *mut AtspiText,
-        offset: c_int,
-        type_: AtspiTextBoundaryType,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiTextRange;
-    pub fn atspi_text_get_text_at_offset(
-        obj: *mut AtspiText,
-        offset: c_int,
-        type_: AtspiTextBoundaryType,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiTextRange;
-    pub fn atspi_text_get_text_attribute_value(
-        obj: *mut AtspiText,
-        offset: c_int,
-        attribute_name: *mut c_char,
-        error: *mut *mut glib::GError,
-    ) -> *mut c_char;
-    pub fn atspi_text_get_text_attributes(
-        obj: *mut AtspiText,
-        offset: c_int,
-        start_offset: *mut c_int,
-        end_offset: *mut c_int,
-        error: *mut *mut glib::GError,
-    ) -> *mut glib::GHashTable;
-    pub fn atspi_text_get_text_before_offset(
-        obj: *mut AtspiText,
-        offset: c_int,
-        type_: AtspiTextBoundaryType,
-        error: *mut *mut glib::GError,
-    ) -> *mut AtspiTextRange;
-    pub fn atspi_text_remove_selection(
-        obj: *mut AtspiText,
-        selection_num: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_text_set_caret_offset(
-        obj: *mut AtspiText,
-        new_offset: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_text_set_selection(
-        obj: *mut AtspiText,
-        selection_num: c_int,
-        start_offset: c_int,
-        end_offset: c_int,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
+    pub fn atspi_text_add_selection(obj: *mut AtspiText, start_offset: c_int, end_offset: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_text_get_attribute_run(obj: *mut AtspiText, offset: c_int, include_defaults: gboolean, start_offset: *mut c_int, end_offset: *mut c_int, error: *mut *mut glib::GError) -> *mut glib::GHashTable;
+    pub fn atspi_text_get_attribute_value(obj: *mut AtspiText, offset: c_int, attribute_name: *mut c_char, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_text_get_attributes(obj: *mut AtspiText, offset: c_int, start_offset: *mut c_int, end_offset: *mut c_int, error: *mut *mut glib::GError) -> *mut glib::GHashTable;
+    pub fn atspi_text_get_bounded_ranges(obj: *mut AtspiText, x: c_int, y: c_int, width: c_int, height: c_int, type_: AtspiCoordType, clipTypeX: AtspiTextClipType, clipTypeY: AtspiTextClipType, error: *mut *mut glib::GError) -> *mut glib::GArray;
+    pub fn atspi_text_get_caret_offset(obj: *mut AtspiText, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_text_get_character_at_offset(obj: *mut AtspiText, offset: c_int, error: *mut *mut glib::GError) -> c_uint;
+    pub fn atspi_text_get_character_count(obj: *mut AtspiText, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_text_get_character_extents(obj: *mut AtspiText, offset: c_int, type_: AtspiCoordType, error: *mut *mut glib::GError) -> *mut AtspiRect;
+    pub fn atspi_text_get_default_attributes(obj: *mut AtspiText, error: *mut *mut glib::GError) -> *mut glib::GHashTable;
+    pub fn atspi_text_get_n_selections(obj: *mut AtspiText, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_text_get_offset_at_point(obj: *mut AtspiText, x: c_int, y: c_int, type_: AtspiCoordType, error: *mut *mut glib::GError) -> c_int;
+    pub fn atspi_text_get_range_extents(obj: *mut AtspiText, start_offset: c_int, end_offset: c_int, type_: AtspiCoordType, error: *mut *mut glib::GError) -> *mut AtspiRect;
+    pub fn atspi_text_get_selection(obj: *mut AtspiText, selection_num: c_int, error: *mut *mut glib::GError) -> *mut AtspiRange;
+    pub fn atspi_text_get_string_at_offset(obj: *mut AtspiText, offset: c_int, granularity: AtspiTextGranularity, error: *mut *mut glib::GError) -> *mut AtspiTextRange;
+    pub fn atspi_text_get_text(obj: *mut AtspiText, start_offset: c_int, end_offset: c_int, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_text_get_text_after_offset(obj: *mut AtspiText, offset: c_int, type_: AtspiTextBoundaryType, error: *mut *mut glib::GError) -> *mut AtspiTextRange;
+    pub fn atspi_text_get_text_at_offset(obj: *mut AtspiText, offset: c_int, type_: AtspiTextBoundaryType, error: *mut *mut glib::GError) -> *mut AtspiTextRange;
+    pub fn atspi_text_get_text_attribute_value(obj: *mut AtspiText, offset: c_int, attribute_name: *mut c_char, error: *mut *mut glib::GError) -> *mut c_char;
+    pub fn atspi_text_get_text_attributes(obj: *mut AtspiText, offset: c_int, start_offset: *mut c_int, end_offset: *mut c_int, error: *mut *mut glib::GError) -> *mut glib::GHashTable;
+    pub fn atspi_text_get_text_before_offset(obj: *mut AtspiText, offset: c_int, type_: AtspiTextBoundaryType, error: *mut *mut glib::GError) -> *mut AtspiTextRange;
+    pub fn atspi_text_remove_selection(obj: *mut AtspiText, selection_num: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_text_set_caret_offset(obj: *mut AtspiText, new_offset: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_text_set_selection(obj: *mut AtspiText, selection_num: c_int, start_offset: c_int, end_offset: c_int, error: *mut *mut glib::GError) -> gboolean;
 
     //=========================================================================
     // AtspiValue
     //=========================================================================
     pub fn atspi_value_get_type() -> GType;
-    pub fn atspi_value_get_current_value(
-        obj: *mut AtspiValue,
-        error: *mut *mut glib::GError,
-    ) -> c_double;
-    pub fn atspi_value_get_maximum_value(
-        obj: *mut AtspiValue,
-        error: *mut *mut glib::GError,
-    ) -> c_double;
-    pub fn atspi_value_get_minimum_increment(
-        obj: *mut AtspiValue,
-        error: *mut *mut glib::GError,
-    ) -> c_double;
-    pub fn atspi_value_get_minimum_value(
-        obj: *mut AtspiValue,
-        error: *mut *mut glib::GError,
-    ) -> c_double;
-    pub fn atspi_value_set_current_value(
-        obj: *mut AtspiValue,
-        new_value: c_double,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
+    pub fn atspi_value_get_current_value(obj: *mut AtspiValue, error: *mut *mut glib::GError) -> c_double;
+    pub fn atspi_value_get_maximum_value(obj: *mut AtspiValue, error: *mut *mut glib::GError) -> c_double;
+    pub fn atspi_value_get_minimum_increment(obj: *mut AtspiValue, error: *mut *mut glib::GError) -> c_double;
+    pub fn atspi_value_get_minimum_value(obj: *mut AtspiValue, error: *mut *mut glib::GError) -> c_double;
+    pub fn atspi_value_set_current_value(obj: *mut AtspiValue, new_value: c_double, error: *mut *mut glib::GError) -> gboolean;
 
     //=========================================================================
     // Other functions
     //=========================================================================
-    pub fn atspi_dbus_connection_setup_with_g_main(
-        connection: *mut DBusConnection,
-        context: *mut glib::GMainContext,
-    );
-    pub fn atspi_deregister_device_event_listener(
-        listener: *mut AtspiDeviceListener,
-        filter: *mut c_void,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_deregister_keystroke_listener(
-        listener: *mut AtspiDeviceListener,
-        key_set: *mut glib::GArray,
-        modmask: AtspiKeyMaskType,
-        event_types: AtspiKeyEventMask,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
+    pub fn atspi_dbus_connection_setup_with_g_main(connection: *mut libdbus::DBusConnection, context: *mut glib::GMainContext);
+    pub fn atspi_deregister_device_event_listener(listener: *mut AtspiDeviceListener, filter: *mut c_void, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_deregister_keystroke_listener(listener: *mut AtspiDeviceListener, key_set: *mut glib::GArray, modmask: AtspiKeyMaskType, event_types: AtspiKeyEventMask, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_exit() -> c_int;
-    pub fn atspi_generate_keyboard_event(
-        keyval: c_long,
-        keystring: *const c_char,
-        synth_type: AtspiKeySynthType,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_generate_mouse_event(
-        x: c_long,
-        y: c_long,
-        name: *const c_char,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_get_a11y_bus() -> *mut DBusConnection;
+    pub fn atspi_generate_keyboard_event(keyval: c_long, keystring: *const c_char, synth_type: AtspiKeySynthType, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_generate_mouse_event(x: c_long, y: c_long, name: *const c_char, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_get_a11y_bus() -> *mut libdbus::DBusConnection;
     pub fn atspi_get_desktop(i: c_int) -> *mut AtspiAccessible;
     pub fn atspi_get_desktop_count() -> c_int;
     pub fn atspi_get_desktop_list() -> *mut glib::GArray;
     pub fn atspi_init() -> c_int;
     pub fn atspi_is_initialized() -> gboolean;
-    pub fn atspi_register_device_event_listener(
-        listener: *mut AtspiDeviceListener,
-        event_types: AtspiDeviceEventMask,
-        filter: *mut c_void,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
-    pub fn atspi_register_keystroke_listener(
-        listener: *mut AtspiDeviceListener,
-        key_set: *mut glib::GArray,
-        modmask: AtspiKeyMaskType,
-        event_types: AtspiKeyEventMask,
-        sync_type: AtspiKeyListenerSyncType,
-        error: *mut *mut glib::GError,
-    ) -> gboolean;
+    pub fn atspi_register_device_event_listener(listener: *mut AtspiDeviceListener, event_types: AtspiDeviceEventMask, filter: *mut c_void, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_register_keystroke_listener(listener: *mut AtspiDeviceListener, key_set: *mut glib::GArray, modmask: AtspiKeyMaskType, event_types: AtspiKeyEventMask, sync_type: AtspiKeyListenerSyncType, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_set_main_context(cnx: *mut glib::GMainContext);
     pub fn atspi_set_timeout(val: c_int, startup_time: c_int);
 
