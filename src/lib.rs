@@ -6,9 +6,11 @@
 #![allow(clippy::approx_constant, clippy::type_complexity, clippy::unreadable_literal)]
 
 extern crate libc;
-extern crate libdbus_sys as libdbus;
+
 extern crate glib_sys as glib;
 extern crate gobject_sys as gobject;
+
+use gio_sys::GDBusConnection as DBusConnection;
 
 mod accessible;
 mod timeval;
@@ -425,7 +427,7 @@ pub struct AtspiApplication {
     pub parent: gobject::GObject,
     pub hash: *mut glib::GHashTable,
     pub bus_name: *mut c_char,
-    pub bus: *mut libdbus::DBusConnection,
+    pub bus: *mut DBusConnection,
     pub root: *mut _AtspiAccessible,
     pub cache: AtspiCache,
     pub toolkit_name: *mut c_char,
@@ -1458,13 +1460,13 @@ extern "C" {
     //=========================================================================
     // Other functions
     //=========================================================================
-    pub fn atspi_dbus_connection_setup_with_g_main(connection: *mut libdbus::DBusConnection, context: *mut glib::GMainContext);
+    pub fn atspi_dbus_connection_setup_with_g_main(connection: *mut DBusConnection, context: *mut glib::GMainContext);
     pub fn atspi_deregister_device_event_listener(listener: *mut AtspiDeviceListener, filter: *mut c_void, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_deregister_keystroke_listener(listener: *mut AtspiDeviceListener, key_set: *mut glib::GArray, modmask: AtspiKeyMaskType, event_types: AtspiKeyEventMask, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_exit() -> c_int;
     pub fn atspi_generate_keyboard_event(keyval: c_long, keystring: *const c_char, synth_type: AtspiKeySynthType, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_generate_mouse_event(x: c_long, y: c_long, name: *const c_char, error: *mut *mut glib::GError) -> gboolean;
-    pub fn atspi_get_a11y_bus() -> *mut libdbus::DBusConnection;
+    pub fn atspi_get_a11y_bus() -> *mut DBusConnection;
     pub fn atspi_get_desktop(i: c_int) -> *mut AtspiAccessible;
     pub fn atspi_get_desktop_count() -> c_int;
     pub fn atspi_get_desktop_list() -> *mut glib::GArray;

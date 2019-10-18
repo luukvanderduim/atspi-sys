@@ -13,8 +13,10 @@ name = "atspi_sys"
 
 [dependencies]
 libc = "0.2"
-nix = "0.15"
-libdbus-sys = "0.2"
+
+[dependencies.gio_sys]
+git = "https://github.com/gtk-rs/sys"
+package = "gio-sys"
 
 [dependencies.glib_sys]
 git = "https://github.com/gtk-rs/sys"
@@ -30,6 +32,3 @@ pkg-config = "0.3.7"
 [dev-dependencies]
 shell-words = "0.1.0"
 tempdir = "0.3"
-
-[features]
-dox = []
