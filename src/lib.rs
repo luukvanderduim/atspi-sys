@@ -13,7 +13,6 @@ extern crate gobject_sys as gobject;
 mod accessible;
 mod timeval;
 
-pub(crate) use timeval::*;
 pub(crate) use accessible::*;
 
 
@@ -778,7 +777,7 @@ pub struct AtspiApplication {
     pub toolkit_name: *mut c_char,
     pub toolkit_version: *mut c_char,
     pub atspi_version: *mut c_char,
-    pub time_added: timeval::timeval,
+    pub time_added: timeval::timevalue,
 }
 
 impl ::std::fmt::Debug for AtspiApplication {
