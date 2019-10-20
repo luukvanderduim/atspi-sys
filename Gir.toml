@@ -1,6 +1,6 @@
 [options]
 work_mode = "sys"
-girs_dir = "gir-files/"
+girs_dir = "gir-files-19.10/"
 library = "Atspi"
 version = "2.0"
 target_path = "."
@@ -9,6 +9,7 @@ single_version_file = "."
 
 external_libraries = [
    "GLib",
+   "Gio",
    "GObject",
 ]
 

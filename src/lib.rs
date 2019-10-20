@@ -6,17 +6,16 @@
 #![allow(clippy::approx_constant, clippy::type_complexity, clippy::unreadable_literal)]
 
 extern crate libc;
-
 extern crate glib_sys as glib;
+extern crate gio_sys as gio;
 extern crate gobject_sys as gobject;
-
-use gio_sys::GDBusConnection as DBusConnection;
 
 mod accessible;
 mod timeval;
 
-pub use accessible::*;
-pub use timeval::*;
+pub(crate) use timeval::*;
+pub(crate) use accessible::*;
+
 
 #[allow(unused_imports)]
 use libc::{c_int, c_char, c_uchar, c_float, c_uint, c_double,
@@ -72,6 +71,7 @@ pub const ATSPI_LAYER_LAST_DEFINED: AtspiComponentLayer = 8;
 pub type AtspiCoordType = c_int;
 pub const ATSPI_COORD_TYPE_SCREEN: AtspiCoordType = 0;
 pub const ATSPI_COORD_TYPE_WINDOW: AtspiCoordType = 1;
+pub const ATSPI_COORD_TYPE_PARENT: AtspiCoordType = 2;
 
 pub type AtspiEventType = c_int;
 pub const ATSPI_KEY_PRESSED_EVENT: AtspiEventType = 0;
@@ -89,6 +89,8 @@ pub const ATSPI_KEY_RELEASE: AtspiKeySynthType = 1;
 pub const ATSPI_KEY_PRESSRELEASE: AtspiKeySynthType = 2;
 pub const ATSPI_KEY_SYM: AtspiKeySynthType = 3;
 pub const ATSPI_KEY_STRING: AtspiKeySynthType = 4;
+pub const ATSPI_KEY_LOCKMODIFIERS: AtspiKeySynthType = 5;
+pub const ATSPI_KEY_UNLOCKMODIFIERS: AtspiKeySynthType = 6;
 
 pub type AtspiLocaleType = c_int;
 pub const ATSPI_LOCALE_TYPE_MESSAGES: AtspiLocaleType = 0;
@@ -260,7 +262,18 @@ pub const ATSPI_ROLE_DESCRIPTION_LIST: AtspiRole = 121;
 pub const ATSPI_ROLE_DESCRIPTION_TERM: AtspiRole = 122;
 pub const ATSPI_ROLE_DESCRIPTION_VALUE: AtspiRole = 123;
 pub const ATSPI_ROLE_FOOTNOTE: AtspiRole = 124;
-pub const ATSPI_ROLE_LAST_DEFINED: AtspiRole = 125;
+pub const ATSPI_ROLE_CONTENT_DELETION: AtspiRole = 125;
+pub const ATSPI_ROLE_CONTENT_INSERTION: AtspiRole = 126;
+pub const ATSPI_ROLE_LAST_DEFINED: AtspiRole = 127;
+
+pub type AtspiScrollType = c_int;
+pub const ATSPI_SCROLL_TOP_LEFT: AtspiScrollType = 0;
+pub const ATSPI_SCROLL_BOTTOM_RIGHT: AtspiScrollType = 1;
+pub const ATSPI_SCROLL_TOP_EDGE: AtspiScrollType = 2;
+pub const ATSPI_SCROLL_BOTTOM_EDGE: AtspiScrollType = 3;
+pub const ATSPI_SCROLL_LEFT_EDGE: AtspiScrollType = 4;
+pub const ATSPI_SCROLL_RIGHT_EDGE: AtspiScrollType = 5;
+pub const ATSPI_SCROLL_ANYWHERE: AtspiScrollType = 6;
 
 pub type AtspiStateType = c_int;
 pub const ATSPI_STATE_INVALID: AtspiStateType = 0;
@@ -333,7 +346,7 @@ pub const ATSPI_TEXT_GRANULARITY_PARAGRAPH: AtspiTextGranularity = 4;
 
 // Constants
 pub const ATSPI_COMPONENTLAYER_COUNT: c_int = 9;
-pub const ATSPI_COORD_TYPE_COUNT: c_int = 2;
+pub const ATSPI_COORD_TYPE_COUNT: c_int = 3;
 pub const ATSPI_DBUS_INTERFACE_ACCESSIBLE: *const c_char = b"org.a11y.atspi.Accessible\0" as *const u8 as *const c_char;
 pub const ATSPI_DBUS_INTERFACE_ACTION: *const c_char = b"org.a11y.atspi.Action\0" as *const u8 as *const c_char;
 pub const ATSPI_DBUS_INTERFACE_APPLICATION: *const c_char = b"org.a11y.atspi.Application\0" as *const u8 as *const c_char;
@@ -347,6 +360,7 @@ pub const ATSPI_DBUS_INTERFACE_EDITABLE_TEXT: *const c_char = b"org.a11y.atspi.E
 pub const ATSPI_DBUS_INTERFACE_EVENT_KEYBOARD: *const c_char = b"org.a11y.atspi.Event.Keyboard\0" as *const u8 as *const c_char;
 pub const ATSPI_DBUS_INTERFACE_EVENT_MOUSE: *const c_char = b"org.a11y.atspi.Event.Mouse\0" as *const u8 as *const c_char;
 pub const ATSPI_DBUS_INTERFACE_EVENT_OBJECT: *const c_char = b"org.a11y.atspi.Event.Object\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_INTERFACE_EVENT_SCREEN_READER: *const c_char = b"org.a11y.atspi.Event.ScreenReader\0" as *const u8 as *const c_char;
 pub const ATSPI_DBUS_INTERFACE_HYPERLINK: *const c_char = b"org.a11y.atspi.Hyperlink\0" as *const u8 as *const c_char;
 pub const ATSPI_DBUS_INTERFACE_HYPERTEXT: *const c_char = b"org.a11y.atspi.Hypertext\0" as *const u8 as *const c_char;
 pub const ATSPI_DBUS_INTERFACE_IMAGE: *const c_char = b"org.a11y.atspi.Image\0" as *const u8 as *const c_char;
@@ -362,13 +376,15 @@ pub const ATSPI_DBUS_PATH_DEC: *const c_char = b"/org/a11y/atspi/registry/device
 pub const ATSPI_DBUS_PATH_NULL: *const c_char = b"/org/a11y/atspi/null\0" as *const u8 as *const c_char;
 pub const ATSPI_DBUS_PATH_REGISTRY: *const c_char = b"/org/a11y/atspi/registry\0" as *const u8 as *const c_char;
 pub const ATSPI_DBUS_PATH_ROOT: *const c_char = b"/org/a11y/atspi/accessible/root\0" as *const u8 as *const c_char;
+pub const ATSPI_DBUS_PATH_SCREEN_READER: *const c_char = b"/org/a11y/atspi/screenreader\0" as *const u8 as *const c_char;
 pub const ATSPI_EVENTTYPE_COUNT: c_int = 4;
 pub const ATSPI_KEYEVENTTYPE_COUNT: c_int = 2;
 pub const ATSPI_KEYSYNTHTYPE_COUNT: c_int = 5;
 pub const ATSPI_MATCHTYPES_COUNT: c_int = 6;
 pub const ATSPI_MODIFIERTYPE_COUNT: c_int = 8;
 pub const ATSPI_RELATIONTYPE_COUNT: c_int = 24;
-pub const ATSPI_ROLE_COUNT: c_int = 126;
+pub const ATSPI_ROLE_COUNT: c_int = 128;
+pub const ATSPI_SCROLLTYPE_COUNT: c_int = 7;
 pub const ATSPI_SORTORDER_COUNT: c_int = 8;
 pub const ATSPI_STATETYPE_COUNT: c_int = 42;
 pub const ATSPI_TEXT_BOUNDARY_TYPE_COUNT: c_int = 7;
@@ -406,12 +422,14 @@ pub type AtspiEventListenerSimpleCB = Option<unsafe extern "C" fn(*const AtspiEv
 #[derive(Copy, Clone)]
 pub struct AtspiAccessibleClass {
     pub parent_class: AtspiObjectClass,
+    pub region_changed: Option<unsafe extern "C" fn(*mut AtspiAccessible, c_int, c_int)>,
 }
 
 impl ::std::fmt::Debug for AtspiAccessibleClass {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         f.debug_struct(&format!("AtspiAccessibleClass @ {:?}", self as *const _))
          .field("parent_class", &self.parent_class)
+         .field("region_changed", &self.region_changed)
          .finish()
     }
 }
@@ -420,38 +438,6 @@ impl ::std::fmt::Debug for AtspiAccessibleClass {
 pub struct _AtspiAccessiblePrivate(c_void);
 
 pub type AtspiAccessiblePrivate = *mut _AtspiAccessiblePrivate;
-
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct AtspiApplication {
-    pub parent: gobject::GObject,
-    pub hash: *mut glib::GHashTable,
-    pub bus_name: *mut c_char,
-    pub bus: *mut DBusConnection,
-    pub root: *mut _AtspiAccessible,
-    pub cache: AtspiCache,
-    pub toolkit_name: *mut c_char,
-    pub toolkit_version: *mut c_char,
-    pub atspi_version: *mut c_char,
-    pub time_added: timeval::timeval,
-}
-
-impl ::std::fmt::Debug for AtspiApplication {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        f.debug_struct(&format!("AtspiApplication @ {:?}", self as *const _))
-         .field("parent", &self.parent)
-         .field("hash", &self.hash)
-         .field("bus_name", &self.bus_name)
-         .field("bus", &self.bus)
-         .field("root", &self.root)
-         .field("cache", &self.cache)
-         .field("toolkit_name", &self.toolkit_name)
-         .field("toolkit_version", &self.toolkit_version)
-         .field("atspi_version", &self.atspi_version)
-         .field("time_added", &self.time_added)
-         .finish()
-    }
-}
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -517,6 +503,7 @@ pub struct AtspiEvent {
     pub detail1: c_int,
     pub detail2: c_int,
     pub any_data: gobject::GValue,
+    pub sender: *mut AtspiAccessible,
 }
 
 impl ::std::fmt::Debug for AtspiEvent {
@@ -527,6 +514,7 @@ impl ::std::fmt::Debug for AtspiEvent {
          .field("detail1", &self.detail1)
          .field("detail2", &self.detail2)
          .field("any_data", &self.any_data)
+         .field("sender", &self.sender)
          .finish()
     }
 }
@@ -774,6 +762,38 @@ impl ::std::fmt::Debug for AtspiAccessible {
          .field("attributes", &self.attributes)
          .field("cached_properties", &self.cached_properties)
          .field("priv_", &self.priv_)
+         .finish()
+    }
+}
+
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct AtspiApplication {
+    pub parent: gobject::GObject,
+    pub hash: *mut glib::GHashTable,
+    pub bus_name: *mut c_char,
+    pub bus: *mut gio::GDBusConnection,
+    pub root: *mut _AtspiAccessible,
+    pub cache: AtspiCache,
+    pub toolkit_name: *mut c_char,
+    pub toolkit_version: *mut c_char,
+    pub atspi_version: *mut c_char,
+    pub time_added: timeval::timeval,
+}
+
+impl ::std::fmt::Debug for AtspiApplication {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        f.debug_struct(&format!("AtspiApplication @ {:?}", self as *const _))
+         .field("parent", &self.parent)
+         .field("hash", &self.hash)
+         .field("bus_name", &self.bus_name)
+         .field("bus", &self.bus)
+         .field("root", &self.root)
+         .field("cache", &self.cache)
+         .field("toolkit_name", &self.toolkit_name)
+         .field("toolkit_version", &self.toolkit_version)
+         .field("atspi_version", &self.atspi_version)
+         .field("time_added", &self.time_added)
          .finish()
     }
 }
@@ -1090,6 +1110,11 @@ extern "C" {
     pub fn atspi_role_get_name(role: AtspiRole) -> *mut c_char;
 
     //=========================================================================
+    // AtspiScrollType
+    //=========================================================================
+    pub fn atspi_scroll_type_get_type() -> GType;
+
+    //=========================================================================
     // AtspiStateType
     //=========================================================================
     pub fn atspi_state_type_get_type() -> GType;
@@ -1164,6 +1189,8 @@ extern "C" {
     //=========================================================================
     pub fn atspi_accessible_get_type() -> GType;
     pub fn atspi_accessible_clear_cache(obj: *mut AtspiAccessible);
+    #[cfg(any(feature = "v2_34", feature = "dox"))]
+    pub fn atspi_accessible_get_accessible_id(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut c_char;
     pub fn atspi_accessible_get_action(obj: *mut AtspiAccessible) -> *mut AtspiAction;
     pub fn atspi_accessible_get_action_iface(obj: *mut AtspiAccessible) -> *mut AtspiAction;
     pub fn atspi_accessible_get_application(obj: *mut AtspiAccessible, error: *mut *mut glib::GError) -> *mut AtspiAccessible;
@@ -1210,6 +1237,11 @@ extern "C" {
     pub fn atspi_accessible_get_value(obj: *mut AtspiAccessible) -> *mut AtspiValue;
     pub fn atspi_accessible_get_value_iface(obj: *mut AtspiAccessible) -> *mut AtspiValue;
     pub fn atspi_accessible_set_cache_mask(accessible: *mut AtspiAccessible, mask: AtspiCache);
+
+    //=========================================================================
+    // AtspiApplication
+    //=========================================================================
+    pub fn atspi_application_get_type() -> GType;
 
     //=========================================================================
     // AtspiDeviceListener
@@ -1316,6 +1348,8 @@ extern "C" {
     pub fn atspi_component_get_position(obj: *mut AtspiComponent, ctype: AtspiCoordType, error: *mut *mut glib::GError) -> *mut AtspiPoint;
     pub fn atspi_component_get_size(obj: *mut AtspiComponent, error: *mut *mut glib::GError) -> *mut AtspiPoint;
     pub fn atspi_component_grab_focus(obj: *mut AtspiComponent, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_component_scroll_to(obj: *mut AtspiComponent, type_: AtspiScrollType, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_component_scroll_to_point(obj: *mut AtspiComponent, coords: AtspiCoordType, x: c_int, y: c_int, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_component_set_extents(obj: *mut AtspiComponent, x: c_int, y: c_int, width: c_int, height: c_int, ctype: AtspiCoordType, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_component_set_position(obj: *mut AtspiComponent, x: c_int, y: c_int, ctype: AtspiCoordType, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_component_set_size(obj: *mut AtspiComponent, width: c_int, height: c_int, error: *mut *mut glib::GError) -> gboolean;
@@ -1444,6 +1478,8 @@ extern "C" {
     pub fn atspi_text_get_text_attributes(obj: *mut AtspiText, offset: c_int, start_offset: *mut c_int, end_offset: *mut c_int, error: *mut *mut glib::GError) -> *mut glib::GHashTable;
     pub fn atspi_text_get_text_before_offset(obj: *mut AtspiText, offset: c_int, type_: AtspiTextBoundaryType, error: *mut *mut glib::GError) -> *mut AtspiTextRange;
     pub fn atspi_text_remove_selection(obj: *mut AtspiText, selection_num: c_int, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_text_scroll_substring_to(obj: *mut AtspiText, start_offset: c_int, end_offset: c_int, type_: AtspiScrollType, error: *mut *mut glib::GError) -> gboolean;
+    pub fn atspi_text_scroll_substring_to_point(obj: *mut AtspiText, start_offset: c_int, end_offset: c_int, coords: AtspiCoordType, x: c_int, y: c_int, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_text_set_caret_offset(obj: *mut AtspiText, new_offset: c_int, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_text_set_selection(obj: *mut AtspiText, selection_num: c_int, start_offset: c_int, end_offset: c_int, error: *mut *mut glib::GError) -> gboolean;
 
@@ -1460,13 +1496,14 @@ extern "C" {
     //=========================================================================
     // Other functions
     //=========================================================================
-    pub fn atspi_dbus_connection_setup_with_g_main(connection: *mut DBusConnection, context: *mut glib::GMainContext);
+    pub fn atspi_dbus_connection_setup_with_g_main(connection: *mut gio::GDBusConnection, context: *mut glib::GMainContext);
+    pub fn atspi_dbus_server_setup_with_g_main(server: *mut gio::GDBusServer, context: *mut glib::GMainContext);
     pub fn atspi_deregister_device_event_listener(listener: *mut AtspiDeviceListener, filter: *mut c_void, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_deregister_keystroke_listener(listener: *mut AtspiDeviceListener, key_set: *mut glib::GArray, modmask: AtspiKeyMaskType, event_types: AtspiKeyEventMask, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_exit() -> c_int;
     pub fn atspi_generate_keyboard_event(keyval: c_long, keystring: *const c_char, synth_type: AtspiKeySynthType, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_generate_mouse_event(x: c_long, y: c_long, name: *const c_char, error: *mut *mut glib::GError) -> gboolean;
-    pub fn atspi_get_a11y_bus() -> *mut DBusConnection;
+    pub fn atspi_get_a11y_bus() -> *mut gio::GDBusConnection;
     pub fn atspi_get_desktop(i: c_int) -> *mut AtspiAccessible;
     pub fn atspi_get_desktop_count() -> c_int;
     pub fn atspi_get_desktop_list() -> *mut glib::GArray;
@@ -1475,6 +1512,7 @@ extern "C" {
     pub fn atspi_register_device_event_listener(listener: *mut AtspiDeviceListener, event_types: AtspiDeviceEventMask, filter: *mut c_void, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_register_keystroke_listener(listener: *mut AtspiDeviceListener, key_set: *mut glib::GArray, modmask: AtspiKeyMaskType, event_types: AtspiKeyEventMask, sync_type: AtspiKeyListenerSyncType, error: *mut *mut glib::GError) -> gboolean;
     pub fn atspi_set_main_context(cnx: *mut glib::GMainContext);
+    pub fn atspi_set_reference_window(accessible: *mut AtspiAccessible);
     pub fn atspi_set_timeout(val: c_int, startup_time: c_int);
 
 }
