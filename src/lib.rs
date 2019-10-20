@@ -14,7 +14,7 @@ mod accessible;
 mod timeval;
 
 pub(crate) use accessible::*;
-
+pub(crate) use timeval::*;
 
 #[allow(unused_imports)]
 use libc::{c_int, c_char, c_uchar, c_float, c_uint, c_double,
@@ -777,7 +777,7 @@ pub struct AtspiApplication {
     pub toolkit_name: *mut c_char,
     pub toolkit_version: *mut c_char,
     pub atspi_version: *mut c_char,
-    pub time_added: timeval::timevalue,
+    pub time_added: timeval::timeval,
 }
 
 impl ::std::fmt::Debug for AtspiApplication {
