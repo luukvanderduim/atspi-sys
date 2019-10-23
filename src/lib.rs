@@ -11,10 +11,10 @@ extern crate gio_sys as gio;
 extern crate gobject_sys as gobject;
 
 mod accessible;
-mod timeval;
+mod timevalue;
 
-pub(crate) use accessible::*;
-pub(crate) use timeval::*;
+pub use accessible::*;
+pub use timevalue::*;
 
 #[allow(unused_imports)]
 use libc::{c_int, c_char, c_uchar, c_float, c_uint, c_double,
@@ -777,7 +777,7 @@ pub struct AtspiApplication {
     pub toolkit_name: *mut c_char,
     pub toolkit_version: *mut c_char,
     pub atspi_version: *mut c_char,
-    pub time_added: timeval::timeval,
+    pub time_added: timeval,
 }
 
 impl ::std::fmt::Debug for AtspiApplication {
