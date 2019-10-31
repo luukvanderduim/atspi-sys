@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/luukvanderduim/atspi-sys.svg?branch=master)](https://travis-ci.com/luukvanderduim/atspi-sys)
+
 # atspi-sys
 
 Gir generated raw bindings for the atspi accessibility library for Rust
