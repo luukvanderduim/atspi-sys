@@ -3214,7 +3214,7 @@ and data associated with the callback should be freed.  It an be NULL.</doc>
             <type name="DeviceListener" c:type="AtspiDeviceListener*"/>
           </instance-parameter>
           <parameter name="event" transfer-ownership="none">
-            <type name="DeviceEvent" c:type="const AtspiDeviceEvent*"/>
+            <type name="DeviceEvent" c:type="AtspiDeviceEvent*"/>
           </parameter>
         </parameters>
       </virtual-method>
